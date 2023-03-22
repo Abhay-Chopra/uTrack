@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+# Views are called actions in other architectures
+# Basically we get a request and we return a response

@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)#r33g7sdp8((wog%nwsqb1qv^)4(&z)_)3^net8o+_05o4(_9'
+SECRET_KEY = 'secret_key'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -75,15 +75,12 @@ WSGI_APPLICATION = 'uTrackApplication.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'utrackdb',
-        'USER': 'remote',  
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',  
         'PASSWORD': 'r2A8DZfBj64',  
-        'HOST': '172.20.224.1',  
-        'PORT': '3306',  
-        'OPTIONS': {  
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'HOST': 'db.jwaeynzkbpszkqfqgtlp.supabase.co',  
+        'PORT': '5432'
     }
 }
 
