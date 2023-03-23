@@ -7,6 +7,7 @@ def home(request):
     '''
     Recieves a HTTP Request, and returns an instance of a HTTP Response
     '''
+    # This function is returning a template, which is a depreciated practice, can dynamically build the HTML File in the front end insead
     return render(request, 'homepage.html')
 
 def test_function(request):
