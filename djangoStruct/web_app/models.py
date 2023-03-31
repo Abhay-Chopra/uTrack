@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
   
 # Create your models here.
@@ -19,11 +20,11 @@ class User(models.Model):
 
 
 class Attendant(models.Model):
-    UCID = models.OneToOneField(User, on_delete=models.CASCADE)
+    UCID = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Verifier(models.Model):
-    UCID = models.OneToOneField(User, on_delete=models.CASCADE)
+    UCID = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Coach(models.Model):
@@ -55,8 +56,8 @@ class Oversees(models.Model):
 class TrackedSessions(models.Model):
     UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
     Facility = models.CharField(max_length=50)
-    Check_in_time = models.DateTimeField()
-    Check_out_time = models.DateTimeField()
+    Check_in_time = models.DateTimeField(editable=False)
+    Check_out_time = models.DateTimeField(editable=False)
 
 
 class Alumnus(models.Model):
@@ -114,10 +115,15 @@ class EnrolledIn(models.Model):
     No_of_classes = models.PositiveIntegerField()
 
 
+def validatePositive(value):
+    if value < 0:
+        raise ValidationError('Value must be positive.')
+
+
 class EquipmentRentals(models.Model):
     Facility_ID = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
     Name = models.CharField(max_length=50)
-    Cost = models.FloatField()
+    Cost = models.FloatField(validators=[validatePositive])
 
 
 class CompetesIn(models.Model):
