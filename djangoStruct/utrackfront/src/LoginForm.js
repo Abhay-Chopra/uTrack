@@ -1,9 +1,11 @@
 import { useState } from "react";
+import axios from "axios";
 
 function LoginForm() {
   const [ucid, setUcid] = useState("");
   const [password, setPassword] = useState("");
   const [isUser, setIsUser] = useState(true);
+  const [error, setError] = useState("");
 
   const handleUcidChange = (event) => {
     setUcid(event.target.value);
@@ -23,7 +25,16 @@ function LoginForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // handle form submission here
+    setError("");
+
+    axios
+      .post("http://127.0.0.1:8000/api/auth/login", { ucid, password })
+      .then((response) => {
+        setError("yabadabadoo");
+      })
+      .catch((error) => {
+        setError("Invalid credentials. Please try again.");
+      });
   };
 
   return (
@@ -71,6 +82,7 @@ function LoginForm() {
             Attendant
           </label>
         </div>
+        <div style={styles.errorMess}>{error}</div>
         <button type="submit">Login</button>
       </div>
     </form>
@@ -78,6 +90,10 @@ function LoginForm() {
 }
 
 const styles = {
+  errorMess: {
+    fontSize: "10px",
+    color: "red",
+  },
   appBackground: {
     color: "#db471a",
   },
