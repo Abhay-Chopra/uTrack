@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'web_app',
     'rest_framework',
     'corsheaders',
+    'django.contrib.sessions',
 ]
 
 MIDDLEWARE = [
