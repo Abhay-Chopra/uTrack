@@ -43,6 +43,7 @@ class ReactView(APIView):
         # handle OPTIONS requests here
         pass
 
+
 class Login(generics.GenericAPIView):
     serializer_class = LoginSerializer
     
@@ -53,9 +54,21 @@ class Login(generics.GenericAPIView):
         # tokens are provided to clients when a successful login occurs
         # TODO: Create a token for persistent authentication
         # token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            "user":UserSerializer(user, context=self.get_serializer_context()).data})
+        return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
 
+
+class Regsiter(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    
+    # post method for the register endpoint
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        # returns a Http Response instance
+        return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
+    
+    
 # Views are just a function which gets a request and returns a response (called actions in other architectures)
 # Mapping of a view to a URL should take place so that each time a request is made to a URL, a particular function (view) is called
 def test(request):
