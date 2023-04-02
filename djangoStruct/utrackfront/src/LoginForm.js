@@ -1,14 +1,15 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState } from 'react';
+import axios from 'axios';
+import { getCookie } from './helpers';
 
 function LoginForm() {
-  const [ucid, setUcid] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isUser, setIsUser] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
-  const handleUcidChange = (event) => {
-    setUcid(event.target.value);
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -25,37 +26,37 @@ function LoginForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setError("");
+    setError('');
 
     axios
-      .post("http://127.0.0.1:8000/api/auth/login", { ucid, password })
+      .post('http://127.0.0.1:8000/api/auth/login/', { username, password })
       .then((response) => {
-        setError("yabadabadoo");
+        setError('yabadabadoo');
       })
       .catch((error) => {
-        setError("Invalid credentials. Please try again.");
+        setError('Invalid credentials. Please try again.');
       });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div style={styles.login}>
-        <div style={styles.UCID}>
+        <div style={styles.username}>
           <div>
-            <label htmlFor="ucid">UCID:</label>
+            <label htmlFor='username'>UCID:</label>
             <input
-              type="text"
-              id="ucid"
-              value={ucid}
-              onChange={handleUcidChange}
+              type='text'
+              id='username'
+              value={username}
+              onChange={handleUsernameChange}
               style={styles.input}
             />
           </div>
           <div>
-            <label htmlFor="password">Password:</label>
+            <label htmlFor='password'>Password:</label>
             <input
-              type="password"
-              id="password"
+              type='password'
+              id='password'
               value={password}
               onChange={handlePasswordChange}
               style={styles.input}
@@ -63,27 +64,27 @@ function LoginForm() {
           </div>
         </div>
         <div>
-          <label htmlFor="user-checkbox">
+          <label htmlFor='user-checkbox'>
             <input
-              type="checkbox"
-              id="user-checkbox"
+              type='checkbox'
+              id='user-checkbox'
               checked={isUser}
               onChange={handleUserCheckboxChange}
-            />{" "}
+            />{' '}
             User
           </label>
-          <label htmlFor="attendant-checkbox">
+          <label htmlFor='attendant-checkbox'>
             <input
-              type="checkbox"
-              id="attendant-checkbox"
+              type='checkbox'
+              id='attendant-checkbox'
               checked={!isUser}
               onChange={handleAttendantCheckboxChange}
-            />{" "}
+            />{' '}
             Attendant
           </label>
         </div>
         <div style={styles.errorMess}>{error}</div>
-        <button type="submit">Login</button>
+        <button type='submit'>Login</button>
       </div>
     </form>
   );
@@ -91,41 +92,41 @@ function LoginForm() {
 
 const styles = {
   errorMess: {
-    fontSize: "10px",
-    color: "red",
+    fontSize: '10px',
+    color: 'red',
   },
   appBackground: {
-    color: "#db471a",
+    color: '#db471a',
   },
   login: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "#F08000",
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#F08000',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 2.0,
-    color: "#292b2c",
+    color: '#292b2c',
     borderRadius: 30,
-    borderWidth: "thick",
-    width: "300px",
-    height: "250px",
+    borderWidth: 'thick',
+    width: '300px',
+    height: '250px',
   },
-  UCID: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
+  username: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
   },
   input: {
-    boxSizing: "border-box",
-    width: "100%",
-    padding: "3px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    outline: "none",
+    boxSizing: 'border-box',
+    width: '100%',
+    padding: '3px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    outline: 'none',
   },
 };
 
