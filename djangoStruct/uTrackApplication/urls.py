@@ -6,6 +6,6 @@ from web_app.views import *
 urlpatterns = [
 	path('admin/', admin.site.urls),
 	path('', ReactView.as_view()),
-	path('api/auth/login/', LoginAPI.as_view()),
-	path('api/auth/register/', RegsiterAPI.as_view())
+	path('api/auth/login/', LoginView.as_view()),
+	path('api/auth/register/', RegsiterView.as_view())
 ]

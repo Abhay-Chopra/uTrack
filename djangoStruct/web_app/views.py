@@ -1,12 +1,16 @@
+# Imports from base django
 from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework import generics
-from .models import *
-from rest_framework.response import Response
-from .serializer import *
-from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import update_last_login
+# Imports from django rest framework
+from rest_framework import generics
 from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
+# Imports from other files in the django project
+from .models import *
+from .serializer import *
 
 class ReactView(APIView):
     serializer_class = ReactSerializer
@@ -44,7 +48,7 @@ class ReactView(APIView):
         pass
 
 
-class LoginAPI(generics.GenericAPIView):
+class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     
     # post method for the login endpoint
@@ -54,12 +58,15 @@ class LoginAPI(generics.GenericAPIView):
         user = serializer.validated_data
         # logging the user in (using django sessions)
         update_last_login(None, user)
+        
+        # Creating a authentication token and having the token expire after one hour
         token, created = Token.objects.get_or_create(user=user)
         return Response({"status":status.HTTP_200_OK, "token":token.key})
 
 
-class RegsiterAPI(generics.GenericAPIView):
+class RegsiterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
     
     # post method for the register endpoint
     def post(self, request, *args, **kwargs):
@@ -68,8 +75,8 @@ class RegsiterAPI(generics.GenericAPIView):
         user = serializer.save()
         # returns a Http Response instance
         return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
-    
-    
+        
+        
 # Views are just a function which gets a request and returns a response (called actions in other architectures)
 # Mapping of a view to a URL should take place so that each time a request is made to a URL, a particular function (view) is called
 def test(request):
