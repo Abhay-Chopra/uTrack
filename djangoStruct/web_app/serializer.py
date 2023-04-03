@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from . models import *
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
 
 class ReactSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class LoginSerializer(serializers.Serializer):
 
     def validate(self, data):  
         # Getting the username and password and passing it into the authenticate function (from django's auth module)
-        user = authenticate(username = data.get('username'), password = data.get('password'))
+        user = authenticate(request=self.context.get('request'), username = data.get('username'), password = data.get('password'))
         if user and user.is_active:
             return user
         if not user.is_active:
@@ -39,4 +39,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         user = User.objects.create_user(username=validated_data['username'], password=validated_data['password'])
+        # adding user to the UTrack User group
+        user.groups.add(Group.objects.get(name='UTrack_User'))
         return user

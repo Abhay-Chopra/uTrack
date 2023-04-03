@@ -4,11 +4,11 @@ from rest_framework import generics
 from .models import *
 from rest_framework.response import Response
 from .serializer import *
-from django.http import HttpResponse
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import update_last_login
+from rest_framework import status
 
 class ReactView(APIView):
-    
     serializer_class = ReactSerializer
     
     def get(self, request):
@@ -44,20 +44,21 @@ class ReactView(APIView):
         pass
 
 
-class Login(generics.GenericAPIView):
+class LoginAPI(generics.GenericAPIView):
     serializer_class = LoginSerializer
     
+    # post method for the login endpoint
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        # tokens are provided to clients when a successful login occurs
-        # TODO: Create a token for persistent authentication
-        # token, created = Token.objects.get_or_create(user=user)
-        return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
+        # logging the user in (using django sessions)
+        update_last_login(None, user)
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({"status":status.HTTP_200_OK, "token":token.key})
 
 
-class Regsiter(generics.GenericAPIView):
+class RegsiterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     
     # post method for the register endpoint
