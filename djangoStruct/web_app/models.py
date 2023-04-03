@@ -5,173 +5,173 @@ from django.db import models
 # Models are the database objects
 
 
-class React(models.Model):
-    name = models.CharField(max_length=30)
-    detail = models.CharField(max_length=500)
-
+# class React(models.Model):
+#     name = models.CharField(max_length=30)
+#     detail = models.CharField(max_length=500)
 
 
 class User(models.Model):
-    UCID = models.CharField(max_length=8, primary_key=True)
-    Ucalgary_email = models.EmailField()
-    Fname = models.CharField(max_length=50)
-    Lname = models.CharField(max_length=50)
-    Password = models.CharField(max_length=25)
+    username = models.CharField(max_length=8, primary_key=True)
+    ucalgary_email = models.EmailField()
+    firstName = models.CharField(max_length=50)
+    lastName = models.CharField(max_length=50)
+    password = models.CharField(max_length=25)
 
     def __str__(self):
-        return f"{self.UCID}; {self.Ucalgary_email}; {self.Fname}; {self.Lname}; {self.Password}"
+        return f"{self.username}; {self.ucalgary_email}; {self.firstName}; {self.lastName}; {self.password}"
 
 
 class Attendant(models.Model):
-    UCID = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.UCID
+        return self.username
 
 
 class Verifier(models.Model):
-    UCID = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.UCID
+        return self.username
+
 
 class Coach(models.Model):
-    UCID = models.ForeignKey(Verifier, on_delete=models.CASCADE)
-    Dinos_team = models.CharField(max_length=50)
+    username = models.ForeignKey(Verifier, on_delete=models.CASCADE)
+    dinos_team = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.UCID}; {self.Dinos_team}"
+        return f"{self.username}; {self.dinos_team}"
 
 
 class Tracked(models.Model):
-    UCID = models.ForeignKey(User, on_delete=models.CASCADE)
-    Goal_hours = models.DecimalField(max_digits=7, decimal_places=2)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    goal_hours = models.DecimalField(max_digits=7, decimal_places=2)
     
     def __str__(self):
-        return f"{self.UCID}; {self.Goal_hours}"
+        return f"{self.username}; {self.goal_hours}"
 
 
 class HoursReport(models.Model):
-    UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    Hours = models.DecimalField(max_digits=5, decimal_places=2)
+    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    hours = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
-        return f"{self.UCID}; {self.Hours}"
+        return f"{self.username}; {self.hours}"
 
 
 class ApplicationReviewer(models.Model):
-    Verifier_UCID = models.ForeignKey(Verifier, on_delete=models.CASCADE)
-    Tracked_UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    Hours = models.ForeignKey(HoursReport, on_delete=models.CASCADE)
+    verifier_username = models.ForeignKey(Verifier, on_delete=models.CASCADE)
+    tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    hours = models.ForeignKey(HoursReport, on_delete=models.CASCADE)  # I think this references 'username' in HoursReport
 
     def __str__(self):
-        return f"{self.Verifier_UCID}; {self.Tracked_UCID}; {self.Hours}"
+        return f"{self.verifier_username}; {self.tracked_username}; {self.hours}"
 
 
 class Oversees(models.Model):
-    Verifier_UCID = models.ForeignKey(Verifier, on_delete=models.CASCADE)
-    Tracked_UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    verifier_username = models.ForeignKey(Verifier, on_delete=models.CASCADE)
+    tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
     
     def __str__(self):
-        return f"{self.Verifier_UCID}; {self.Tracked_UCID}"
+        return f"{self.verifier_username}; {self.tracked_username}"
 
 
 class TrackedSessions(models.Model):
-    UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    Facility = models.CharField(max_length=50)
-    Check_in_time = models.DateTimeField(editable=False)
-    Check_out_time = models.DateTimeField(editable=False)
+    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    facility = models.CharField(max_length=50)
+    check_in_time = models.DateTimeField(editable=False)
+    check_out_time = models.DateTimeField(editable=False)
 
     def __str__(self):
-        return f"{self.UCID}; {self.Facility}; {self.Check_in_time}; {self.Check_out_time}"
+        return f"{self.username}; {self.facility}; {self.check_in_time}; {self.check_out_time}"
 
 
 class Alumnus(models.Model):
-    UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.UCID
+        return self.username
 
 
 class Student(models.Model):
-    UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.UCID
+        return self.username
 
 
 class DinosMember(models.Model):
-    UCID = models.ForeignKey(Student, on_delete=models.CASCADE)
-    Dinos_team = models.CharField(max_length=100)
+    username = models.ForeignKey(Student, on_delete=models.CASCADE)
+    dinos_team = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.UCID}; {self.Dinos_team}"
+        return f"{self.username}; {self.dinos_team}"
 
 
 class ActiveLivingFacility(models.Model):
-    Facility_ID = models.CharField(max_length=20, primary_key=True)
+    facility_id = models.CharField(max_length=20, primary_key=True)
 
     def __str__(self):
-        return self.Facility_ID
+        return self.facility_id
 
 
 class WorksAt(models.Model):
-    UCID = models.ForeignKey(Attendant, on_delete=models.CASCADE)
-    Facility_ID = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
+    username = models.ForeignKey(Attendant, on_delete=models.CASCADE)
+    facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.UCID}; {self.Facility_ID}"
+        return f"{self.username}; {self.facility_id}"
 
 
 class FacilityUsage(models.Model):
-    UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    Facility_ID = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
+    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.UCID}; {self.Facility_ID}"
+        return f"{self.username}; {self.facility_id}"
 
 
 class ChecksIn(models.Model):
-    Attendant_UCID = models.ForeignKey(Attendant, on_delete=models.CASCADE)
-    Tracked_UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    attendant_username = models.ForeignKey(Attendant, on_delete=models.CASCADE)
+    tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.Attendant_UCID}; {self.Tracked_UCID}"
+        return f"{self.attendant_username}; {self.tracked_username}"
 
 
 class LooksAt(models.Model):
-    Verifier_UCID = models.ForeignKey(Verifier, on_delete=models.CASCADE)
-    Tracked_UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    Hours = models.ForeignKey(HoursReport, on_delete=models.CASCADE)
+    verifier_username = models.ForeignKey(Verifier, on_delete=models.CASCADE)
+    tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    hours = models.ForeignKey(HoursReport, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.Verifier_UCID}; {self.Tracked_UCID}; {self.Hours}"
+        return f"{self.verifier_username}; {self.tracked_username}; {self.hours}"
 
 
 class Intramurals(models.Model):
-    Intramural_ID = models.CharField(max_length=30, primary_key=True)
-    Intramural_team = models.CharField(max_length=50)
-    Facility_ID = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
+    intramural_id = models.CharField(max_length=30, primary_key=True)
+    intramural_team = models.CharField(max_length=50)
+    facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.Intramural_ID}; {self.Intramural_team}; {self.Facility_ID}"
+        return f"{self.intramural_id}; {self.intramural_team}; {self.facility_id}"
 
 
 class Class(models.Model):
-    Class_ID = models.CharField(max_length=30, primary_key=True)
-    Facility_ID = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
+    class_id = models.CharField(max_length=30, primary_key=True)
+    facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.Class_ID}; {self.Facility_ID}"
+        return f"{self.class_id}; {self.facility_id}"
 
 
 class EnrolledIn(models.Model):
-    UCID = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    Class_ID = models.ForeignKey(Class, on_delete=models.CASCADE)
-    No_of_classes = models.PositiveIntegerField()
+    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
+    no_of_classes = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.UCID}; {self.Class_ID}; {self.No_of_classes}"
+        return f"{self.username}; {self.class_id}; {self.no_of_classes}"
 
 
 def validatePositive(value):
@@ -180,18 +180,18 @@ def validatePositive(value):
 
 
 class EquipmentRentals(models.Model):
-    Facility_ID = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
-    Name = models.CharField(max_length=50)
-    Cost = models.FloatField(validators=[validatePositive])
+    facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    cost = models.FloatField(validators=[validatePositive])
 
     def __str__(self):
-        return f"{self.Facility_ID}; {self.Name}; {self.Cost}"
+        return f"{self.facility_id}; {self.name}; {self.cost}"
 
 
 class CompetesIn(models.Model):
-    TRACKED = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    Intramural_ID = models.ForeignKey(Intramurals, on_delete=models.CASCADE)
+    tracked = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    intramural_id = models.ForeignKey(Intramurals, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.TRACKED}; {self.Intramural_ID}"
+        return f"{self.tracked}; {self.intramural_id}"
 
