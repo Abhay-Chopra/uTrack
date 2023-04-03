@@ -12,6 +12,7 @@ from rest_framework.permissions import AllowAny
 from .models import *
 from .serializer import *
 
+
 class ReactView(APIView):
     serializer_class = ReactSerializer
     
@@ -50,6 +51,7 @@ class ReactView(APIView):
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
     
     # post method for the login endpoint
     def post(self, request, *args, **kwargs):
