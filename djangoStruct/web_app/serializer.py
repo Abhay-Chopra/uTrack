@@ -167,7 +167,6 @@ class CompetesInSerializer(serializers.ModelSerializer):
 
 ### SERIALIZERS FOR VIEWS THAT ALLOW USERS TO CREATE NEW INSTANCES OF A DATA MODEL ###
 
-# 
 
 ######################################################################
 
@@ -181,19 +180,24 @@ class CompetesInSerializer(serializers.ModelSerializer):
 
 ### TODO: SERIALIZERS FOR VIEWS THAT REQUIRE AUTHORIZATION OR AUTHENTICAION ###
 
-# it's missing firstName and lastName
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    username = serializers.CharField(required=True, max_length=8)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'}, max_length=24)
+    email = serializers.CharField(write_only=True, required=True, max_length=40)
+    first_name = serializers.CharField(write_only=True, required=True, max_length=20)
+    last_name = serializers.CharField(write_only=True, required=True, max_length=20)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'user_type']
+        fields = ['username','email', 'password', 'user_type', 'first_name', 'last_name']
 
     def create(self, validated_data):
         email = validated_data.pop('email')
         password = validated_data.pop('password')
         user_type = validated_data.pop('user_type')
-        user = User(email=email, user_type=user_type)
+        first_name = validated_data.pop('first_name')
+        last_name = validated_data.pop('last_name')
+        user = User(email=email, user_type=user_type, first_name=first_name, last_name=last_name)
         user.set_password(password)
         user.save()
         return user
@@ -206,40 +210,23 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+    username = serializers.CharField(max_length=8)
+    password = serializers.CharField(max_length=24, write_only=True)
 
     def validate(self, data):
         user = authenticate(
             username=data.get('username'),
             password=data.get('password')
         )
-
+        if not user.is_active:
+            raise ValidationError("Inactive User")
         if not user:
-            raise serializers.ValidationError("Invalid login credentials")
+            raise ValidationError("Invalid login credentials")
 
         return user
 
-######################################################################
-
-
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=8)
-    password = serializers.CharField(max_length=24, write_only=True)
-
-    def validate(self, data):  
-        # Getting the username and password and passing it into the authenticate function (from django's auth module)
-        user = authenticate(request=self.context.get('request'), username = data.get('username'), password = data.get('password'))
-        if user and user.is_active:
-            return user
-        if not user.is_active:
-            raise serializers.ValidationError("Inactive User")
-        # Reached here after the user is None (user is returned None when authentication fails)
-        raise serializers.ValidationError("Invalid Authentication Credentials")
-
 
 class RegisterSerializer(serializers.ModelSerializer):
-    
     # these fields specify the data that is required from the incoming request to create a new user
     username = serializers.CharField(write_only=True, required=True, max_length=8)
     password = serializers.CharField(write_only=True, required=True, max_length=24)

@@ -16,44 +16,11 @@ from .models import *
 from .serializer import *
 
 
-class LoginView(generics.GenericAPIView):
-    serializer_class = LoginSerializer
-    permission_classes = [AllowAny]
-    
-    # post method for the login endpoint
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        # logging the user in (using django sessions)
-        update_last_login(None, user)
-        
-        # Creating a authentication token and having the token expire after one hour
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({"status":status.HTTP_200_OK, "token":token.key})
-
-
-class RegisterView(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]
-    
-    # post method for the register endpoint
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        # returns a Http Response instance
-        return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
-
-
-########################################################################
-
-
-# If this make sense we could use it to register a new user utilizing UserRegistrationSerializer
-# instead of RegisterSerializer
+# Creates a user instance
 class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
-
+    permission_classes = [AllowAny]
+    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -67,18 +34,19 @@ class UserRegistrationView(generics.CreateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# If this make sense we could use it to log in users utilizing UserLoginSerializer
-# instead of LoginSerializer
+# Returns a authentication token to valid users
 class UserLoginView(ObtainAuthToken):
     serializer_class = UserLoginSerializer
-
+    # Not sure if we need to have an authentication token to reach the login view (registration seems to return a token)
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data
+        update_last_login(None, user)
         token, _ = Token.objects.get_or_create(user=user)  # _ discards the boolean value
-        return Response({'token': token.key})
+        return Response({"status":status.HTTP_200_OK, 'token': token.key})
 
 
 # Retrieves all the classes a Tracked user is enrolled in.
@@ -193,3 +161,16 @@ class CompetesIntramuralView(generics.CreateAPIView):
         return Response({'message': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)
 
 
+####################################################################################################### DEPRECATED
+class RegisterView(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+    
+    # post method for the register endpoint
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        # returns a Http Response instance
+        return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
+###################################################################################################### DEPRECATED
