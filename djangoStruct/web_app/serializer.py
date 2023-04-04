@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'firstName', 'lastName']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 
 class AttendantSerializer(serializers.ModelSerializer):
@@ -231,18 +231,18 @@ class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(write_only=True, required=True, max_length=8)
     password = serializers.CharField(write_only=True, required=True, max_length=24)
     email = serializers.CharField(write_only=True, required=True, max_length=40)
-    firstName = serializers.CharField(write_only=True, required=True, max_length=20)
-    lastName = serializers.CharField(write_only=True, required=True, max_length=20)
+    first_name = serializers.CharField(write_only=True, required=True, max_length=20)
+    last_name = serializers.CharField(write_only=True, required=True, max_length=20)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'email', 'firstName', 'lastName')
+        fields = ('username', 'password', 'email', 'first_name', 'last_name')
 
         # since this is already specified in the first set of fields I think it is redundant
-        extra_kwarg = {'password':{'write_only':True}, 'password':{'required': True}, 'email':{'required': True}, 'firstName':{'required': True}, 'lastName':{'required': True}}
+        extra_kwarg = {'password':{'write_only':True}, 'password':{'required': True}, 'email':{'required': True}, 'first_name':{'required': True}, 'last_name':{'required': True}}
         
     def create(self, validated_data):
-        user = User.objects.create_user(username=validated_data['username'], password=validated_data['password'], email=validated_data['email'], firstName=validated_data['firstName'], lastName=validated_data['lastName'])
+        user = User.objects.create_user(username=validated_data['username'], password=validated_data['password'], email=validated_data['email'], first_name=validated_data['first_name'], last_name=validated_data['last_name'])
 
         # add user to the UTrack_Users group
         user.groups.add(Group.objects.get(name='UTrack_Users'))
