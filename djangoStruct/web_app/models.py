@@ -5,20 +5,15 @@ from django.db import models
 # Models are the database objects
 
 
-# class React(models.Model):
-#     name = models.CharField(max_length=30)
-#     detail = models.CharField(max_length=500)
-
-
 class User(models.Model):
     username = models.CharField(max_length=8, primary_key=True)
-    ucalgary_email = models.EmailField()
-    firstName = models.CharField(max_length=50)
-    lastName = models.CharField(max_length=50)
+    email = models.EmailField()
+    firstName = models.CharField(max_length=40)
+    lastName = models.CharField(max_length=40)
     password = models.CharField(max_length=25)
 
     def __str__(self):
-        return f"{self.username}; {self.ucalgary_email}; {self.firstName}; {self.lastName}; {self.password}"
+        return f"{self.username}; {self.email}; {self.firstName}; {self.lastName}; {self.password}"
 
 
 class Attendant(models.Model):

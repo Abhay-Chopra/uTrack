@@ -4,18 +4,12 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
 
 
-# class ReactSerializer(serializers.ModelSerializer):
-# 	class Meta:
-# 		model = React
-# 		fields = ['name', 'detail']
-
-
 ### SERIALIZERS FOR EACH MODEL ###
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username', 'email', 'firstName', 'lastName']
 
 
 class AttendantSerializer(serializers.ModelSerializer):
@@ -167,8 +161,66 @@ class CompetesInSerializer(serializers.ModelSerializer):
         fields = ['tracked', 'intramural_id']
 
 
+
 ######################################################################
 
+
+### SERIALIZERS FOR VIEWS THAT ALLOW USERS TO CREATE NEW INSTANCES OF A DATA MODEL ###
+
+# 
+
+######################################################################
+
+
+### TODO: SERIALIZERS FOR VIEWS THAT RETURN A LIST OF INSTANCES OF A DATA MODEL ###
+
+# need to include the subset of fields that are relevant to the user in the serializer
+
+######################################################################
+
+
+### TODO: SERIALIZERS FOR VIEWS THAT REQUIRE AUTHORIZATION OR AUTHENTICAION ###
+
+# it's missing firstName and lastName
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
+    class Meta:
+        model = User
+        fields = ['email', 'password', 'user_type']
+
+    def create(self, validated_data):
+        email = validated_data.pop('email')
+        password = validated_data.pop('password')
+        user_type = validated_data.pop('user_type')
+        user = User(email=email, user_type=user_type)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def validate_user_type(self, value):
+        user_types = ['tracked', 'verifier', 'attendant']
+        if value not in user_types:
+            raise ValidationError(f'User type must be one of the following: {user_types}')
+        return value
+
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(
+            username=data.get('username'),
+            password=data.get('password')
+        )
+
+        if not user:
+            raise serializers.ValidationError("Invalid login credentials")
+
+        return user
+
+######################################################################
 
 
 class LoginSerializer(serializers.Serializer):
@@ -191,19 +243,19 @@ class RegisterSerializer(serializers.ModelSerializer):
     # these fields specify the data that is required from the incoming request to create a new user
     username = serializers.CharField(write_only=True, required=True, max_length=8)
     password = serializers.CharField(write_only=True, required=True, max_length=24)
-    uofcEmail = serializers.CharField(write_only=True, required=True, max_length=40)
+    email = serializers.CharField(write_only=True, required=True, max_length=40)
     firstName = serializers.CharField(write_only=True, required=True, max_length=20)
     lastName = serializers.CharField(write_only=True, required=True, max_length=20)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'uofcEmail', 'firstName', 'lastName')
+        fields = ('username', 'password', 'email', 'firstName', 'lastName')
 
         # since this is already specified in the first set of fields I think it is redundant
-        extra_kwarg = {'password':{'write_only':True}, 'password':{'required': True}, 'uofcEmail':{'required': True}, 'firstName':{'required': True}, 'lastName':{'required': True}}
+        extra_kwarg = {'password':{'write_only':True}, 'password':{'required': True}, 'email':{'required': True}, 'firstName':{'required': True}, 'lastName':{'required': True}}
         
     def create(self, validated_data):
-        user = User.objects.create_user(username=validated_data['username'], password=validated_data['password'], email=validated_data['uofcEmail'], firstName=validated_data['firstName'], lastName=validated_data['lastName'])
+        user = User.objects.create_user(username=validated_data['username'], password=validated_data['password'], email=validated_data['email'], firstName=validated_data['firstName'], lastName=validated_data['lastName'])
 
         # add user to the UTrack_Users group
         user.groups.add(Group.objects.get(name='UTrack_Users'))
