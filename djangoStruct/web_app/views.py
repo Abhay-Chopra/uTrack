@@ -64,6 +64,15 @@ class TrackedEnrolledClassesView(APIView):
         return Response(serializer.data)
 
 
+# Retrieves all the users in the group, "Tracked" usergroup
+class AllUsersView(APIView):
+    
+    def get(self, request):
+        queryset = User.objects.filter(groups__name='Tracked')
+        seralizer = UserSerializer(queryset, many=True)
+        return Response(seralizer.data)
+        
+        
 # Allows a Tracked user to enroll in a class
 class EnrolledInCreateAPIView(generics.CreateAPIView):
 
