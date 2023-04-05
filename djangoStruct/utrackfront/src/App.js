@@ -1,10 +1,20 @@
 import uofc from "./ucinterlock_3c-CC.png";
 import "./App.css";
-import "./LoginForm.js";
-import LoginForm from "./LoginForm.js";
+import Login from "./LoginForm";
+import AttendantPage from "./AttendantSheet";
+import UserPage from "./UserSheet";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from "react-router-dom";
 import React, { useLayoutEffect } from "react";
+import ReactDOM from "react-dom";
 
 function App() {
+  const history = useHistory();
+
   return (
     <div
       className="App"
@@ -24,7 +34,19 @@ function App() {
             University of Calgary!
           </h2>
         </div>
-        <LoginForm style={{ background: "orange" }} />
+        <Router>
+          <Switch>
+            <Route exact path="/" component={Login} />
+            <Route
+              path="/attendant"
+              render={() => <AttendantPage key={Math.random()} />}
+            />
+            <Route
+              path="/user"
+              render={() => <UserPage key={Math.random()} />}
+            />
+          </Switch>
+        </Router>
       </div>
     </div>
   );
