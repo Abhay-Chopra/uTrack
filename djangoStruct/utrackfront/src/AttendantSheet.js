@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from "react";
+import AttendantTable from "./AttendantTable";
 
-function AttendantPage() {
+function AttendantPage(props) {
   return (
     <div
       className="AttendantPage"
       style={{
-        background: "linear-gradient(to bottom right, #E35335, #eb8100)",
-        height: "100vh",
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        backgroundColor: "#F08000",
+        borderRadius: 30,
+        borderWidth: "thick",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <h1 style={{ color: "white", fontSize: "32px", fontWeight: "bold" }}>
-        Attendant Page
-      </h1>
-      <p style={{ color: "white", fontSize: "18px", marginTop: "10px" }}>
-        Welcome to the Attendant Page!
+      <p style={{ color: "white", fontSize: "18px", marginTop: "5px" }}>
+        <AttendantTable
+          attendantName={props.attendantName}
+          attendantData={props.attendantData}
+          handleSelect={props.handleSelect}
+        />
       </p>
     </div>
   );
