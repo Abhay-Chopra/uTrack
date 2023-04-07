@@ -75,6 +75,8 @@ class AllUsersView(APIView):
     
 class CheckInSystemView(APIView):
     serializer_class = TrackedSessionsSerializer
+    # TODO: Have this available to authenticated users only (leave this for now, come back after features are implemented)
+    permission_classes = [AllowAny]
     
     def get(self, request, tracked_username):
         queryset = TrackedSessions.objects.filter(tracked_username=tracked_username)
@@ -84,10 +86,21 @@ class CheckInSystemView(APIView):
         serializer = self.serializer_class(queryset)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def put(self, request):
-        pass
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+                         
     def patch(self, request):
-        pass
+        # We first filter to get all sessions from a user
+        all_sessions = TrackedSessions.objects.filter(tracked_username=self.request.data.get('tracked_username'))
+        # We then just get the newest created session that is 'ongoing' => Assuming only one ongoing session at a time
+        instance = all_sessions.get(check_out_time=None)
+        instance.check_out_time = self.request.data.get('check_out_time')
+        instance.save()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 class CheckOutView(APIView):
     serializer_class = TrackedSessionsSerializer

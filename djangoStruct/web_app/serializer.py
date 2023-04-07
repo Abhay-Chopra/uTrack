@@ -63,7 +63,7 @@ class OverseesSerializer(serializers.ModelSerializer):
 class TrackedSessionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrackedSessions
-        fields = ['tracked_username', 'facility', 'check_in_time', 'check_out_time']
+        fields = ['tracked_username', 'facility_id', 'check_in_time', 'check_out_time']
 
 
 class AlumnusSerializer(serializers.ModelSerializer):
