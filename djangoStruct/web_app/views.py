@@ -61,7 +61,7 @@ class TrackedEnrolledClassesView(APIView):
 
         serializer = ClassSerializer(classes, many=True)
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # Retrieves all the users in the group, "Tracked" usergroup
@@ -70,8 +70,36 @@ class AllUsersView(APIView):
     def get(self, request):
         queryset = User.objects.filter(groups__name='Tracked')
         seralizer = UserSerializer(queryset, many=True)
-        return Response(seralizer.data)
-        
+        return Response(seralizer.data, status=status.HTTP_200_OK)
+    
+    
+class CheckInSystemView(APIView):
+    serializer_class = TrackedSessionsSerializer
+    
+    def get(self, request, tracked_username):
+        queryset = TrackedSessions.objects.filter(tracked_username=tracked_username)
+        # Returns a 404 Response if there are no entries for the user
+        if not queryset.exists():
+            return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request):
+        pass
+    def patch(self, request):
+        pass
+    
+class CheckOutView(APIView):
+    serializer_class = TrackedSessionsSerializer
+    
+    def get(self, request, tracked_username):
+        queryset = TrackedSessions.objects.filter(tracked_username=tracked_username).filter(check_out_time__isnull=True)
+        # Returns a 404 Response if there are no ongoing sessions (i.e. sessions without an endtime)
+        if not queryset.exists():
+            return Response({'error': 'No ongoing sessions found for this user.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
         
 # Allows a Tracked user to enroll in a class
 class EnrolledInCreateAPIView(generics.CreateAPIView):

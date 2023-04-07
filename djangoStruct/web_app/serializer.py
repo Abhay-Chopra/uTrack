@@ -63,7 +63,7 @@ class OverseesSerializer(serializers.ModelSerializer):
 class TrackedSessionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrackedSessions
-        fields = ['username', 'facility', 'check_in_time', 'check_out_time']
+        fields = ['tracked_username', 'facility', 'check_in_time', 'check_out_time']
 
 
 class AlumnusSerializer(serializers.ModelSerializer):
@@ -186,10 +186,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.CharField(write_only=True, required=True, max_length=40)
     first_name = serializers.CharField(write_only=True, required=True, max_length=20)
     last_name = serializers.CharField(write_only=True, required=True, max_length=20)
-
+    # making sure the user is given a usergroup
+    group = serializers.CharField(write_only=True, required=True, max_length=10)
     class Meta:
         model = User
-        fields = ['username','email', 'password', 'user_type', 'first_name', 'last_name']
+        fields = ['username','email', 'password', 'group', 'first_name', 'last_name']
 
     def create(self, validated_data):
         email = validated_data.pop('email')
@@ -198,16 +199,20 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
         user = User(email=email, user_type=user_type, first_name=first_name, last_name=last_name)
+        # adding user to a user group
+        group = Group.objects.get(name=validated_data.pop('group'))
+        user.groups.add(group)
         user.set_password(password)
         user.save()
         return user
 
+    ########################################################################################### DEPRACATED
     def validate_user_type(self, value):
         user_types = ['tracked', 'verifier', 'attendant']
         if value not in user_types:
             raise ValidationError(f'User type must be one of the following: {user_types}')
         return value
-
+    ###########################################################################################
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=8)
