@@ -192,18 +192,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username','email', 'password', 'group', 'first_name', 'last_name']
 
+    #TODO: Handle errors when user group doesn't exist, or when username is already taken
     def create(self, validated_data):
+        username = validated_data.pop('username')
         email = validated_data.pop('email')
         password = validated_data.pop('password')
-        user_type = validated_data.pop('user_type')
+        # user_type = validated_data.pop('user_type')
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
-        user = User(email=email, user_type=user_type, first_name=first_name, last_name=last_name)
+        user = User(username=username, email=email, first_name=first_name, last_name=last_name)
+        
+        user.set_password(password)
+        user.save()
         # adding user to a user group
         group = Group.objects.get(name=validated_data.pop('group'))
         user.groups.add(group)
-        user.set_password(password)
-        user.save()
         return user
 
     ########################################################################################### DEPRACATED
@@ -230,25 +233,3 @@ class UserLoginSerializer(serializers.Serializer):
 
         return user
 
-
-class RegisterSerializer(serializers.ModelSerializer):
-    # these fields specify the data that is required from the incoming request to create a new user
-    username = serializers.CharField(write_only=True, required=True, max_length=8)
-    password = serializers.CharField(write_only=True, required=True, max_length=24)
-    email = serializers.CharField(write_only=True, required=True, max_length=40)
-    first_name = serializers.CharField(write_only=True, required=True, max_length=20)
-    last_name = serializers.CharField(write_only=True, required=True, max_length=20)
-
-    class Meta:
-        model = User
-        fields = ('username', 'password', 'email', 'first_name', 'last_name')
-
-        # since this is already specified in the first set of fields I think it is redundant
-        extra_kwarg = {'password':{'write_only':True}, 'password':{'required': True}, 'email':{'required': True}, 'first_name':{'required': True}, 'last_name':{'required': True}}
-        
-    def create(self, validated_data):
-        user = User.objects.create_user(username=validated_data['username'], password=validated_data['password'], email=validated_data['email'], first_name=validated_data['first_name'], last_name=validated_data['last_name'])
-
-        # add user to the UTrack_Users group
-        user.groups.add(Group.objects.get(name='UTrack_Users'))
-        return user

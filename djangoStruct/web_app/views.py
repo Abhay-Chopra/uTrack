@@ -196,18 +196,3 @@ class CompetesIntramuralView(generics.CreateAPIView):
         new_competitor.save()
 
         return Response({'message': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)
-
-
-####################################################################################################### DEPRECATED
-class RegisterView(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]
-    
-    # post method for the register endpoint
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        # returns a Http Response instance
-        return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
-###################################################################################################### DEPRECATED
