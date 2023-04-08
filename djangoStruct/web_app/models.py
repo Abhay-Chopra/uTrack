@@ -1,30 +1,21 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-  
+from datetime import datetime
+from django.contrib.auth.models import User
+
 # Create your models here.
 # Models are the database objects
 
 
-class User(models.Model):
-    username = models.CharField(max_length=8, primary_key=True)
-    email = models.EmailField()
-    firstName = models.CharField(max_length=40)
-    lastName = models.CharField(max_length=40)
-    password = models.CharField(max_length=25)
-
-    def __str__(self):
-        return f"{self.username}; {self.email}; {self.firstName}; {self.lastName}; {self.password}"
-
-
 class Attendant(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username')
 
     def __str__(self):
         return self.username
 
 
 class Verifier(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username')
 
     def __str__(self):
         return self.username
@@ -39,7 +30,7 @@ class Coach(models.Model):
 
 
 class Tracked(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username')
     goal_hours = models.DecimalField(max_digits=7, decimal_places=2)
     
     def __str__(self):
@@ -63,6 +54,7 @@ class ApplicationReviewer(models.Model):
         return f"{self.verifier_username}; {self.tracked_username}; {self.hours}"
 
 
+# We can forgo this relation as its just easier to have the attendant directly on the tracked sessions
 class Oversees(models.Model):
     verifier_username = models.ForeignKey(Verifier, on_delete=models.CASCADE)
     tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
@@ -71,14 +63,22 @@ class Oversees(models.Model):
         return f"{self.verifier_username}; {self.tracked_username}"
 
 
-class TrackedSessions(models.Model):
-    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    facility = models.CharField(max_length=50)
-    check_in_time = models.DateTimeField(editable=False)
-    check_out_time = models.DateTimeField(editable=False)
+class ActiveLivingFacility(models.Model):
+    facility_id = models.CharField(max_length=20, primary_key=True)
 
     def __str__(self):
-        return f"{self.username}; {self.facility}; {self.check_in_time}; {self.check_out_time}"
+        return self.facility_id
+
+
+class TrackedSessions(models.Model):
+    tracked_username = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username')
+    # TODO Make this a foreign key to Active Living Facility when that table has been populated
+    facility_id = models.IntegerField()
+    check_in_time = models.DateTimeField(default=datetime.now)
+    check_out_time = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.tracked_username}; {self.facility_id}; {self.check_in_time}; {self.check_out_time}"
 
 
 class Alumnus(models.Model):
@@ -101,14 +101,6 @@ class DinosMember(models.Model):
 
     def __str__(self):
         return f"{self.username}; {self.dinos_team}"
-
-
-class ActiveLivingFacility(models.Model):
-    facility_id = models.CharField(max_length=20, primary_key=True)
-
-    def __str__(self):
-        return self.facility_id
-
 
 class WorksAt(models.Model):
     username = models.ForeignKey(Attendant, on_delete=models.CASCADE)

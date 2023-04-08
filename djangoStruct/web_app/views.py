@@ -1,6 +1,7 @@
 # Imports from base django
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseForbidden
 from django.contrib.auth.models import update_last_login
 # Imports from django rest framework
 from rest_framework import generics
@@ -37,16 +38,18 @@ class UserRegistrationView(generics.CreateAPIView):
 # Returns a authentication token to valid users
 class UserLoginView(ObtainAuthToken):
     serializer_class = UserLoginSerializer
-    # Not sure if we need to have an authentication token to reach the login view (registration seems to return a token)
     permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        update_last_login(None, user)
-        token, _ = Token.objects.get_or_create(user=user)  # _ discards the boolean value
-        return Response({"status":status.HTTP_200_OK, 'token': token.key})
+        if not user.groups.filter(name=self.request.data.get('group')).exists():
+            return HttpResponseForbidden('You are not allowed to access this resource')
+        else:
+            update_last_login(None, user)
+            token, _ = Token.objects.get_or_create(user=user)  # _ discards the boolean value
+            return Response({"status":status.HTTP_200_OK, 'token': token.key})
 
 
 # Retrieves all the classes a Tracked user is enrolled in.
@@ -61,7 +64,7 @@ class TrackedEnrolledClassesView(APIView):
 
         serializer = ClassSerializer(classes, many=True)
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # Retrieves all the users in the group, "Tracked" usergroup
@@ -70,8 +73,49 @@ class AllUsersView(APIView):
     def get(self, request):
         queryset = User.objects.filter(groups__name='Tracked')
         seralizer = UserSerializer(queryset, many=True)
-        return Response(seralizer.data)
-        
+        return Response(seralizer.data, status=status.HTTP_200_OK)
+    
+    
+class CheckInSystemView(APIView):
+    serializer_class = TrackedSessionsSerializer
+    # TODO: Have this available to authenticated users only (leave this for now, come back after features are implemented)
+    permission_classes = [AllowAny]
+    
+    def get(self, request, tracked_username):
+        queryset = TrackedSessions.objects.filter(tracked_username=tracked_username)
+        # Returns a 404 Response if there are no entries for the user
+        if not queryset.exists():
+            return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+                         
+    def patch(self, request):
+        # We first filter to get all sessions from a user
+        all_sessions = TrackedSessions.objects.filter(tracked_username=self.request.data.get('tracked_username'))
+        # We then just get the newest created session that is 'ongoing' => Assuming only one ongoing session at a time
+        instance = all_sessions.get(check_out_time=None)
+        instance.check_out_time = self.request.data.get('check_out_time')
+        instance.save()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class CheckOutView(APIView):
+    serializer_class = TrackedSessionsSerializer
+    
+    def get(self, request, tracked_username):
+        queryset = TrackedSessions.objects.filter(tracked_username=tracked_username).filter(check_out_time__isnull=True)
+        # Returns a 404 Response if there are no ongoing sessions (i.e. sessions without an endtime)
+        if not queryset.exists():
+            return Response({'error': 'No ongoing sessions found for this user.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
         
 # Allows a Tracked user to enroll in a class
 class EnrolledInCreateAPIView(generics.CreateAPIView):
@@ -168,18 +212,3 @@ class CompetesIntramuralView(generics.CreateAPIView):
         new_competitor.save()
 
         return Response({'message': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)
-
-
-####################################################################################################### DEPRECATED
-class RegisterView(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]
-    
-    # post method for the register endpoint
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        # returns a Http Response instance
-        return Response({"user":UserSerializer(user, context=self.get_serializer_context()).data})
-###################################################################################################### DEPRECATED

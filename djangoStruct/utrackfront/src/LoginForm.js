@@ -4,6 +4,7 @@ import axios from "axios";
 function LoginForm({ history }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [group, setGroup] = useState("");
   const [isUser, setIsUser] = useState(true);
   const [error, setError] = useState("");
 
@@ -17,10 +18,12 @@ function LoginForm({ history }) {
 
   const handleUserCheckboxChange = (event) => {
     setIsUser(true);
+    setGroup("Tracked");
   };
 
   const handleAttendantCheckboxChange = (event) => {
     setIsUser(false);
+    setGroup("Attendant");
   };
 
   const handleSubmit = (event) => {
@@ -28,7 +31,11 @@ function LoginForm({ history }) {
     setError("");
 
     axios
-      .post("http://127.0.0.1:8000/api/auth/login/", { username, password })
+      .post("http://127.0.0.1:8000/api/auth/login/", {
+        username,
+        password,
+        group,
+      })
       .then((response) => {
         if (!isUser) {
           history.push("/attendant");
