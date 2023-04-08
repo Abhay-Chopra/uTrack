@@ -34,7 +34,7 @@ class UserRegistrationView(generics.CreateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Returns a authentication token to valid users
+# Returns an authentication token to valid users
 class UserLoginView(ObtainAuthToken):
     serializer_class = UserLoginSerializer
     # Not sure if we need to have an authentication token to reach the login view (registration seems to return a token)
@@ -66,7 +66,8 @@ class TrackedEnrolledClassesView(APIView):
 
 # Retrieves all the users in the group, "Tracked" usergroup
 class AllUsersView(APIView):
-    
+    # could pass a parameter to specify which type of user we want
+
     def get(self, request):
         queryset = User.objects.filter(groups__name='Tracked')
         seralizer = UserSerializer(queryset, many=True)
@@ -183,6 +184,7 @@ class EquipmentRentalsView(generics.CreateAPIView):
         return Response({'success': 'Equipment rental added successfully.'}, status=status.HTTP_201_CREATED)
 
 
+# Allows a user to compete in an intramural tournament
 class CompetesIntramuralView(generics.CreateAPIView):
     serializer_class = IntramuralsSerializer
     permission_classes = [permissions.IsAuthenticated]
