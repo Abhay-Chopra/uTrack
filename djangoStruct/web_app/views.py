@@ -113,8 +113,9 @@ class CheckOutView(APIView):
         # Returns a 404 Response if there are no ongoing sessions (i.e. sessions without an endtime)
         if not queryset.exists():
             return Response({'error': 'No ongoing sessions found for this user.'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(queryset)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(queryset, many=True)
+        check_in_time = serializer.data[0]['check_in_time']
+        return Response({'check_out_time':check_in_time}, status=status.HTTP_200_OK)
     
         
 # Allows a Tracked user to enroll in a class
