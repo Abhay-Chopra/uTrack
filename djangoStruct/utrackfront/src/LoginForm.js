@@ -116,7 +116,7 @@ const styles = {
     color: "#292b2c",
     borderRadius: 30,
     borderWidth: "thick",
-    width: "300px",
+    width: "35%",
     height: "250px",
   },
   username: {

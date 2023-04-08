@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import DatePickPopup from "./DatePickPopup";
 
 function AttendantTable() {
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     axios
@@ -16,9 +18,8 @@ function AttendantTable() {
       });
   }, []);
 
-  const handleSelect = (row) => {
-    // do something with the selected row
-    console.log(row);
+  const handleSelect = (user) => {
+    setSelectedUser(user);
   };
 
   return (
@@ -46,6 +47,7 @@ function AttendantTable() {
           ))}
         </tbody>
       </table>
+      {selectedUser && <DatePickPopup user={selectedUser} />}
     </div>
   );
 }
