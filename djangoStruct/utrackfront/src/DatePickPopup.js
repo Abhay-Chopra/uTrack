@@ -8,8 +8,8 @@ import { format } from "date-fns";
 import axios from "axios";
 
 function DatePickerPopup(props) {
-  const [tracked_username, setTrackedUsername] = useState("");
-  const [facility_id, setFacilityId] = useState("");
+  let tracked_username = "";
+  let facility_id = "";
   let check_in_time = "";
   let check_out_time = null;
 
@@ -28,8 +28,8 @@ function DatePickerPopup(props) {
   };
 
   const handleSubmit = () => {
-    setTrackedUsername(props.user.username);
-    setFacilityId("1");
+    tracked_username = props.user.username;
+    facility_id = "1";
     axios
       .post("http://127.0.0.1:8000/api/Checkins/", {
         tracked_username,
@@ -41,6 +41,7 @@ function DatePickerPopup(props) {
       .catch((error) => {
         console.log(error);
       });
+    props.handleClose();
   };
 
   return (

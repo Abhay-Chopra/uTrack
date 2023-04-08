@@ -5,6 +5,15 @@ import DatePickPopup from "./DatePickPopup";
 function AttendantTable() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const handleDateSelect = () => {
+    setShowDatePicker(true);
+  };
+
+  const handleClose = () => {
+    setShowDatePicker(false);
+  };
 
   useEffect(() => {
     axios
@@ -20,6 +29,12 @@ function AttendantTable() {
 
   const handleSelect = (user) => {
     setSelectedUser(user);
+    setShowDatePicker(true);
+  };
+
+  const handleDatePickPopupClose = () => {
+    setSelectedUser(null);
+    setShowDatePicker(false);
   };
 
   return (
@@ -47,7 +62,12 @@ function AttendantTable() {
           ))}
         </tbody>
       </table>
-      {selectedUser && <DatePickPopup user={selectedUser} />}
+      {showDatePicker && (
+        <DatePickPopup
+          user={selectedUser}
+          handleClose={handleDatePickPopupClose}
+        />
+      )}
     </div>
   );
 }
