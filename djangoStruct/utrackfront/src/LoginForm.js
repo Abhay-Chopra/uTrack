@@ -51,6 +51,11 @@ function LoginForm({ history }) {
       });
   };
 
+  const handleRegistration = (event) => {
+    history.push("/register");
+    history.go(0);
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div style={styles.login}>
@@ -97,6 +102,7 @@ function LoginForm({ history }) {
           </label>
         </div>
         <div style={styles.errorMess}>{error}</div>
+        <button onClick={() => handleRegistration()}>Register</button>
         <button type="submit">Login</button>
       </div>
     </form>

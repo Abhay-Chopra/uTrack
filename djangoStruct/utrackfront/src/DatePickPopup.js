@@ -8,12 +8,10 @@ import { format } from "date-fns";
 import axios from "axios";
 
 function DatePickerPopup(props) {
-  const [checkin, setCheckin] = useState(new Date());
-  const [checkout, setCheckout] = useState(new Date());
   const [tracked_username, setTrackedUsername] = useState("");
   const [facility_id, setFacilityId] = useState("");
   let check_in_time = "";
-  let check_out_time = "";
+  let check_out_time = null;
 
   const handleCheckinChange = (ChangeEventArgs) => {
     check_in_time = format(
@@ -30,7 +28,6 @@ function DatePickerPopup(props) {
   };
 
   const handleSubmit = () => {
-    console.log(props.user.username);
     setTrackedUsername(props.user.username);
     setFacilityId("1");
     axios
