@@ -1,6 +1,7 @@
 # Imports from base django
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseForbidden
 from django.contrib.auth.models import update_last_login
 # Imports from django rest framework
 from rest_framework import generics
@@ -37,16 +38,18 @@ class UserRegistrationView(generics.CreateAPIView):
 # Returns a authentication token to valid users
 class UserLoginView(ObtainAuthToken):
     serializer_class = UserLoginSerializer
-    # Not sure if we need to have an authentication token to reach the login view (registration seems to return a token)
     permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        update_last_login(None, user)
-        token, _ = Token.objects.get_or_create(user=user)  # _ discards the boolean value
-        return Response({"status":status.HTTP_200_OK, 'token': token.key})
+        if not user.groups.filter(name=self.request.data.get('group')).exists():
+            return HttpResponseForbidden('You are not allowed to access this resource')
+        else:
+            update_last_login(None, user)
+            token, _ = Token.objects.get_or_create(user=user)  # _ discards the boolean value
+            return Response({"status":status.HTTP_200_OK, 'token': token.key})
 
 
 # Retrieves all the classes a Tracked user is enrolled in.
