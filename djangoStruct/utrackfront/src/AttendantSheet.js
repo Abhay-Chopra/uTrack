@@ -17,6 +17,7 @@ function AttendantPage(props) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        width: "35%",
       }}
     >
       <p style={{ color: "white", fontSize: "18px", marginTop: "5px" }}>
