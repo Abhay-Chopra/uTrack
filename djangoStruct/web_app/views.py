@@ -163,11 +163,11 @@ class UserIntramuralsView(APIView):
 # The equipment a user rents
 class UserEquipmentView(APIView):
 
-    serializer_class = Rents
+    serializer_class = RentsEquipment
     permission_classes = [AllowAny]
 
     def get(self, request, username):
-        queryset = Rents.objects.filter(username=username)
+        queryset = RentsEquipment.objects.filter(username=username)
         if not queryset.exists():
             return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.serializer_class(queryset)
@@ -180,25 +180,21 @@ class UserEquipmentView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-### TODO: need to update these views ###
-
-
 # Allows a Tracked user to enroll in a class
-class EnrolledInCreateAPIView(generics.CreateAPIView):
+class EnrolledInView(generics.CreateAPIView):
 
     queryset = EnrolledIn.objects.all()
     serializer_class = EnrolledInSerializer
 
     def perform_create(self, serializer):
         class_id = self.request.data.get('class_id')
-        tracked_id = self.request.data.get('tracked_id')
-        no_of_classes = self.request.data.get('no_of_classes')
+        username = self.request.data.get('username')
 
         # Validate inputs
-        if not class_id or not tracked_id or not no_of_classes:
-            raise ValidationError("Please provide class_id, tracked_id, and no_of_classes.")
+        if not class_id or not username:
+            raise ValidationError("Please provide class_id and username.")
 
-        tracked = get_object_or_404(Tracked, pk=tracked_id)
+        tracked = get_object_or_404(Tracked, pk=username)
         class_ = get_object_or_404(Class, pk=class_id)
 
         # Check if user is already enrolled in the class
@@ -206,42 +202,38 @@ class EnrolledInCreateAPIView(generics.CreateAPIView):
             raise ValidationError("User is already enrolled in this class.")
 
         # Create enrollment
-        enrollment = serializer.save(username=tracked, class_id=class_, no_of_classes=no_of_classes)
+        enrollment = serializer.save(username=tracked, class_id=class_)
 
         return enrollment
 
 
 # Allows a user to rent equipment
-class EquipmentRentalsView(generics.CreateAPIView):
+class RentsEquipmentView(generics.CreateAPIView):
 
-    serializer_class = EquipmentRentalsSerializer
+    serializer_class = RentsEquipmentSerializer
 
     def post(self, request, *args, **kwargs):
-        # Get the user making the request
         user = request.user
-
-        # Get the rental data from the request data
         rental_data = request.data
 
         # Validate the rental data
-        serializer = EquipmentRentalsSerializer(data=rental_data)
+        serializer = RentsEquipmentSerializer(data=rental_data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         # Get the equipment rental instance to update
-        facility_id = rental_data.get('facility_id')
-        name = rental_data.get('name')
+        equipment_id = rental_data.get('equipment_id')
         try:
-            equipment_rental = EquipmentRentals.objects.get(facility_id=facility_id, name=name)
-        except EquipmentRentals.DoesNotExist:
+            equipment_rental = RentsEquipment.objects.get(equipment_id=equipment_id)
+        except RentsEquipment.DoesNotExist:
             return Response({'error': 'Equipment rental not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         # Check if the user is allowed to rent equipment
-        if not user.tracked:
+        if not user.tracked:  # look more into this
             return Response({'error': 'User is not a Tracked user.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if the user has already rented the equipment
-        if equipment_rental.tracked.filter(username=user.tracked).exists():
+        if equipment_rental.tracked.filter(username=user.tracked).exists():  # look more into this
             return Response({'error': 'User has already rented this equipment.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Rent the equipment
@@ -253,7 +245,7 @@ class EquipmentRentalsView(generics.CreateAPIView):
 
 
 # Allows a user to compete in an intramural tournament
-class CompetesIntramuralView(generics.CreateAPIView):
+class CompetesInView(generics.CreateAPIView):
     serializer_class = IntramuralsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -268,14 +260,10 @@ class CompetesIntramuralView(generics.CreateAPIView):
 
         # Check if the user is already enrolled
         if CompetesIn.objects.filter(tracked=tracked_user, intramural_id=intramural).exists():
-            return Response({'message': 'User is already enrolled in the tournament.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if the facility is the same for the intramural tournament and the tracked user
-        if tracked_user.facility_usage_set.first().facility_id != intramural.facility_id:
-            return Response({'message': 'User is not authorized to compete in this intramural tournament.'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'User is already enrolled in the tournament.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create a new CompetesIn object to store the enrollment information
         new_competitor = CompetesIn(tracked=tracked_user, intramural_id=intramural)
         new_competitor.save()
 
-        return Response({'message': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)
+        return Response({'success': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)

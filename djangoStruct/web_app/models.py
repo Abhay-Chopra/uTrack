@@ -165,7 +165,7 @@ def validatePositive(value):
         raise ValidationError('Value must be positive.')
 
 
-class EquipmentRentals(models.Model):
+class Equipment(models.Model):
     equipment_id = models.IntegerField(max_length=15, primary_key=True)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
     description = models.CharField(max_length=50)
@@ -176,9 +176,9 @@ class EquipmentRentals(models.Model):
 
 
 # Assuming coaches and verifiers can rent equipment by using username instead of tracked
-class Rents(models.Model):
+class RentsEquipment(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username')
-    equipment_id = models.ForeignKey(EquipmentRentals, on_delete=models.CASCADE)
+    equipment_id = models.ForeignKey(Equipment, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.username}; {self.equipment_id}"

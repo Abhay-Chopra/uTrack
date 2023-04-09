@@ -147,11 +147,18 @@ class EnrolledInSerializer(serializers.ModelSerializer):
         fields = ['username', 'class_id']
 
 
-class EquipmentRentalsSerializer(serializers.ModelSerializer):
+class EquipmentSerializer(serializers.ModelSerializer):
     facility_id = ActiveLivingFacilitySerializer()
     class Meta:
-        model = EquipmentRentals
-        fields = ['facility_id', 'name', 'cost']
+        model = Equipment
+        fields = ['equipment_id', 'facility_id', 'description', 'cost']
+
+
+class RentsEquipmentSerializer(serializers.ModelSerializer):
+    username = UserSerializer
+    class Meta:
+        model = RentsEquipment
+        fields = ['username', 'equipment_id']
 
 
 class CompetesInSerializer(serializers.ModelSerializer):
