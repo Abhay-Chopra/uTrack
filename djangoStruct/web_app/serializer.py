@@ -143,7 +143,8 @@ class EnrolledInSerializer(serializers.ModelSerializer):
     class_id = ClassSerializer()
     class Meta:
         model = EnrolledIn
-        fields = ['username', 'class_id', 'no_of_classes']
+        # doesn't make sense to have no. of classes if there's a single class_id
+        fields = ['username', 'class_id']
 
 
 class EquipmentRentalsSerializer(serializers.ModelSerializer):
@@ -178,7 +179,7 @@ class CompetesInSerializer(serializers.ModelSerializer):
 ######################################################################
 
 
-### TODO: SERIALIZERS FOR VIEWS THAT REQUIRE AUTHORIZATION OR AUTHENTICAION ###
+### SERIALIZERS FOR VIEWS THAT REQUIRE AUTHORIZATION OR AUTHENTICAION ###
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True, max_length=8)

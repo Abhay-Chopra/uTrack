@@ -64,7 +64,7 @@ class Oversees(models.Model):
 
 
 class ActiveLivingFacility(models.Model):
-    facility_id = models.CharField(max_length=20, primary_key=True)
+    facility_id = models.IntegerField(max_length=15, primary_key=True)
 
     def __str__(self):
         return self.facility_id
@@ -136,7 +136,7 @@ class LooksAt(models.Model):
 
 
 class Intramurals(models.Model):
-    intramural_id = models.CharField(max_length=30, primary_key=True)
+    intramural_id = models.IntegerField(max_length=15, primary_key=True)
     intramural_team = models.CharField(max_length=50)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
@@ -145,7 +145,7 @@ class Intramurals(models.Model):
 
 
 class Class(models.Model):
-    class_id = models.CharField(max_length=30, primary_key=True)
+    class_id = models.IntegerField(max_length=15, primary_key=True)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -155,10 +155,9 @@ class Class(models.Model):
 class EnrolledIn(models.Model):
     username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
-    no_of_classes = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.username}; {self.class_id}; {self.no_of_classes}"
+        return f"{self.username}; {self.class_id}"
 
 
 def validatePositive(value):
@@ -167,18 +166,28 @@ def validatePositive(value):
 
 
 class EquipmentRentals(models.Model):
+    equipment_id = models.IntegerField(max_length=15, primary_key=True)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=50)
     cost = models.FloatField(validators=[validatePositive])
 
     def __str__(self):
-        return f"{self.facility_id}; {self.name}; {self.cost}"
+        return f"{self.equipment_id}; {self.facility_id}; {self.description}; {self.cost}"
+
+
+# Assuming coaches and verifiers can rent equipment by using username instead of tracked
+class Rents(models.Model):
+    username = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username')
+    equipment_id = models.ForeignKey(EquipmentRentals, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.username}; {self.equipment_id}"
 
 
 class CompetesIn(models.Model):
-    tracked = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+    tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
     intramural_id = models.ForeignKey(Intramurals, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.tracked}; {self.intramural_id}"
+        return f"{self.tracked_username}; {self.intramural_id}"
 
