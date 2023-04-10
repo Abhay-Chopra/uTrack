@@ -102,14 +102,27 @@ function LoginForm({ history }) {
           </label>
         </div>
         <div style={styles.errorMess}>{error}</div>
-        <button onClick={() => handleRegistration()}>Register</button>
-        <button type="submit">Login</button>
+        <div>
+          <button
+            onClick={() => handleRegistration()}
+            style={styles.buttonStyles}
+          >
+            Register
+          </button>
+          <button type="submit" style={styles.buttonStyles}>
+            Login
+          </button>
+        </div>
       </div>
     </form>
   );
 }
 
 const styles = {
+  buttonStyles: {
+    width: "15%",
+    margin: "10px",
+  },
   errorMess: {
     fontSize: "10px",
     color: "red",
