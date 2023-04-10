@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo, useReducer } from "react";
 import {
   DateTimePickerComponent,
   ChangeEventArgs,
@@ -8,36 +8,48 @@ import { format } from "date-fns";
 import axios from "axios";
 
 function DatePickerPopup(props) {
-  let tracked_username = "";
-  let facility_id = "";
-  let check_in_time = "";
-  let check_out_time = null;
+  let checkOutTime = null;
+  let checkInTime = null;
+  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const handleCheckinChange = (ChangeEventArgs) => {
-    check_in_time = format(
-      ChangeEventArgs.value,
-      "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
-    );
+    checkInTime = format(ChangeEventArgs.value, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
   };
 
   const handleCheckoutChange = (ChangeEventArgs) => {
-    check_out_time = format(
+    checkOutTime = format(
       ChangeEventArgs.value,
       "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
     );
   };
 
   const handleSubmit = () => {
-    tracked_username = props.user.username;
-    facility_id = "1";
+    const tracked_username = props.user.username;
+    const facility_id = "1";
+    console.log(props.disabled);
+    console.log(props.checkInTime);
+    if (props.disabled === false) {
+      checkInTime = props.checkInTime;
+    }
     axios
       .post("http://127.0.0.1:8000/api/Checkins/", {
         tracked_username,
         facility_id,
-        check_in_time,
-        check_out_time,
+        check_in_time: checkInTime,
+        check_out_time: checkOutTime,
       })
-      .then((response) => {})
+      .then((response) => {
+        if (props.disabled === false) {
+          axios
+            .delete(
+              `http://127.0.0.1:8000/api/Checkout/last/${tracked_username}/`
+            )
+            .then((response) => {})
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      })
       .catch((error) => {
         console.log(error);
       });
@@ -46,16 +58,20 @@ function DatePickerPopup(props) {
 
   return (
     <div>
+      {props.disabled && (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label>Check-in Time:</label>
+          <DateTimePickerComponent
+            placeholder="Choose the date and time this user came in."
+            step={10}
+            change={handleCheckinChange}
+            style={{
+              color: "white",
+            }}
+          />
+        </div>
+      )}
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <label>Check-in Time:</label>
-        <DateTimePickerComponent
-          placeholder="Choose the date and time this user came in."
-          step={10}
-          change={handleCheckinChange}
-          style={{
-            color: "white",
-          }}
-        />
         <label>Check-out Time:</label>
         <DateTimePickerComponent
           placeholder="Choose the date and time this user left."
