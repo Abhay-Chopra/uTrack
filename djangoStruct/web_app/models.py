@@ -66,7 +66,7 @@ class Oversees(models.Model):
 
 class ActiveLivingFacility(models.Model):
     facility_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
-    facility_name = models.CharField(max_length=30)
+    facility_name = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
         return f"{self.facility_id}; {self.facility_name}"
@@ -143,11 +143,11 @@ class LooksAt(models.Model):
 
 class Intramural(models.Model):
     intramural_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
-    intramural_team = models.CharField(max_length=50)
+    intramural_name = models.CharField(max_length=50, unique=True)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.intramural_id}; {self.intramural_team}; {self.facility_id}"
+        return f"{self.intramural_id}; {self.intramural_name}; {self.facility_id}"
 
 
 class Class(models.Model):
