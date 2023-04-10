@@ -87,7 +87,7 @@ class DinosMemberSerializer(serializers.ModelSerializer):
 class ActiveLivingFacilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = ActiveLivingFacility
-        fields = ['facility_id']
+        fields = ['facility_id', 'facility_name']
 
 
 class WorksAtSerializer(serializers.ModelSerializer):
@@ -98,12 +98,12 @@ class WorksAtSerializer(serializers.ModelSerializer):
         fields = ['username', 'facility_id']
 
 
-class FacilityUsageSerializer(serializers.ModelSerializer):
-    username = TrackedSerializer()
+class UsesFacilitySerializer(serializers.ModelSerializer):
+    tracked_username = TrackedSerializer()
     facility_id = ActiveLivingFacilitySerializer()
     class Meta:
-        model = FacilityUsage
-        fields = ['username', 'facility_id']
+        model = UsesFacility
+        fields = ['tracked_username', 'facility_id']
 
 
 class ChecksInSerializer(serializers.ModelSerializer):
@@ -123,10 +123,10 @@ class LooksAtSerializer(serializers.ModelSerializer):
         fields = ['verifier_username', 'tracked_username', 'hours']
 
 
-class IntramuralsSerializer(serializers.ModelSerializer):
+class IntramuralSerializer(serializers.ModelSerializer):
     facility_id = ActiveLivingFacilitySerializer()
     class Meta:
-        model = Intramurals
+        model = Intramural
         fields = ['intramural_id', 'intramural_team', 'facility_id']
 
 
@@ -142,7 +142,6 @@ class EnrolledInSerializer(serializers.ModelSerializer):
     class_id = ClassSerializer()
     class Meta:
         model = EnrolledIn
-        # doesn't make sense to have no. of classes if there's a single class_id
         fields = ['username', 'class_id']
 
 
@@ -162,7 +161,7 @@ class RentsEquipmentSerializer(serializers.ModelSerializer):
 
 class CompetesInSerializer(serializers.ModelSerializer):
     tracked = TrackedSerializer()
-    intramural_id = IntramuralsSerializer()
+    intramural_id = IntramuralSerializer()
     class Meta:
         model = CompetesIn
         fields = ['tracked', 'intramural_id']
