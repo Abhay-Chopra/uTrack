@@ -85,6 +85,8 @@ class CheckInSystemView(APIView):
 
 class CheckOutView(APIView):
     serializer_class = TrackedSessionsSerializer
+    # TODO: Have this available to authenticated users only (leave this for now, come back after features are implemented)
+    permission_classes = [AllowAny]
     
     def get(self, request, tracked_username):
         queryset = TrackedSessions.objects.filter(tracked_username=tracked_username).filter(check_out_time__isnull=True)
@@ -94,7 +96,15 @@ class CheckOutView(APIView):
         serializer = self.serializer_class(queryset, many=True)
         return Response({'facility_id':serializer.data[0]['facility_id'],'check_in_time':serializer.data[0]['check_in_time']}, status=status.HTTP_200_OK)
 
-
+    def delete(self, request, tracked_username):
+        queryset = TrackedSessions.objects.filter(tracked_username=tracked_username).filter(check_out_time__isnull=True)
+        # Returns a 404 Response if there are no ongoing sessions (i.e. sessions without an endtime)
+        if not queryset.exists():
+            return Response({'error': 'No ongoing sessions found for this user.'}, status=status.HTTP_404_NOT_FOUND)
+        # Deleting the ongoing session
+        queryset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 ########################################################
 
 ###### VIEWS THAT HANDLE GENERAL DATA ######

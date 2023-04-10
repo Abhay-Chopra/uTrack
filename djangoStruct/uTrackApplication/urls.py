@@ -19,7 +19,7 @@ urlpatterns = [
 	# 
 	path('api/Checkins/', CheckInSystemView.as_view()),
 	path('api/get_Checkins/<str:tracked_username>/', CheckInSystemView.as_view()),
-    path('api/get_Checkins/last/<str:tracked_username>/', CheckOutView.as_view()),
+    path('api/Checkout/last/<str:tracked_username>/', CheckOutView.as_view()),
     
 	# HANDLING USER-SPECIFIC DATA
     path('api/get_user_classes/<str:username>', UserClassesView.as_view()),
