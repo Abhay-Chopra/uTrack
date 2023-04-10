@@ -53,31 +53,6 @@ class UserLoginView(ObtainAuthToken):
             return Response({"status":status.HTTP_200_OK, 'token': token.key})
 
 
-# Retrieves all the classes a Tracked user is enrolled in.
-class TrackedEnrolledClassesView(APIView):
-
-    def get(self, request, tracked_id):
-        tracked = get_object_or_404(Tracked, pk=tracked_id)
-        enrolled_in = EnrolledIn.objects.filter(username=tracked)
-
-        class_ids = [enrollment.class_id_id for enrollment in enrolled_in]
-        classes = Class.objects.filter(id__in=class_ids)
-
-        serializer = ClassSerializer(classes, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# Retrieves all the users in the group, "Tracked" usergroup
-class AllUsersView(APIView):
-    # could pass a parameter to specify which type of user we want
-
-    def get(self, request):
-        queryset = User.objects.filter(groups__name='Tracked')
-        seralizer = UserSerializer(queryset, many=True)
-        return Response(seralizer.data, status=status.HTTP_200_OK)
-
-
 class CheckInSystemView(APIView):
     serializer_class = TrackedSessionsSerializer
     # TODO: Have this available to authenticated users only (leave this for now, come back after features are implemented)
@@ -130,19 +105,60 @@ class CheckOutView(APIView):
         queryset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+########################################################
+
+###### VIEWS THAT HANDLE GENERAL DATA ######
+
+
+# Retrieves all the users in the group, "Tracked" usergroup
+class AllUsersView(APIView):
+    # could pass a parameter to specify which type of users we want
+
+    def get(self, request):
+        queryset = User.objects.filter(groups__name='Tracked')
+        seralizer = UserSerializer(queryset, many=True)
+        return Response(seralizer.data, status=status.HTTP_200_OK)
+
+
+class AllClassesView(APIView):
+    pass
+
+
+class AllIntramuralsView(APIView):
+    pass
+
+
+class AllEquipmentView(APIView):
+    pass
+
+
+######################################################
+
+###### VIEWS THAT HANDLE USER-SPECIFIC DATA ######
+
+
 # The classes a user participates in
 class UserClassesView(APIView):
-
     serializer_class = EnrolledIn
     permission_classes = [AllowAny]
 
+    # Retrieve the user's classes
     def get(self, request, username):
-        queryset = EnrolledIn.objects.filter(username=username)
-        if not queryset.exists():
-            return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(queryset)
+        # Returns a single object
+        valid_user = get_object_or_404(User, pk=username)
+
+        # Returns a queryset
+        enrolled_in = EnrolledIn.objects.filter(username=valid_user)
+
+        class_ids = [enrollment.class_id for enrollment in enrolled_in]
+        classes = Class.objects.filter(id__in=class_ids)
+
+        # many=True as it serializes a collection of objects
+        serializer = ClassSerializer(classes, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # Update the user's classes
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -190,12 +206,20 @@ class UserEquipmentView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+######################################################
+
+#### VIEWS THAT UPDATE USER-SPECIFIC DATA IN THE DB ####
+
+###TODO: INCORPORATE THESE VIEWS INTO THE ONES ABOVE
+### TO REDUCE REDUNDANCY
+
 # Allows a Tracked user to enroll in a class
 class EnrolledInView(generics.CreateAPIView):
 
     queryset = EnrolledIn.objects.all()
     serializer_class = EnrolledInSerializer
 
+    # TODO: any type of user should be able to register in classes
     def perform_create(self, serializer):
         class_id = self.request.data.get('class_id')
         username = self.request.data.get('username')
@@ -215,6 +239,32 @@ class EnrolledInView(generics.CreateAPIView):
         enrollment = serializer.save(username=tracked, class_id=class_)
 
         return enrollment
+
+
+# Allows a user to compete in an intramural tournament
+class CompetesInView(generics.CreateAPIView):
+    serializer_class = IntramuralsSerializer
+    second_serializer = CompetesInSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, intramural_id):
+        intramural = Intramurals.objects.filter(intramural_id=intramural_id).first()
+        if not intramural:
+            raise ValidationError('Intramural tournament not found.')
+
+        tracked_user = Tracked.objects.filter(username=request.user).first()
+        if not tracked_user:
+            raise ValidationError('Tracked user not found.')
+
+        # Check if the user is already enrolled
+        if CompetesIn.objects.filter(tracked=tracked_user, intramural_id=intramural).exists():
+            return Response({'error': 'User is already enrolled in the tournament.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new CompetesIn object to store the enrollment information
+        new_competitor = CompetesIn(tracked=tracked_user, intramural_id=intramural)
+        new_competitor.save()
+
+        return Response({'success': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)
 
 
 # Allows a user to rent equipment
@@ -253,27 +303,3 @@ class RentsEquipmentView(generics.CreateAPIView):
         # Return a success response
         return Response({'success': 'Equipment rental added successfully.'}, status=status.HTTP_201_CREATED)
 
-
-# Allows a user to compete in an intramural tournament
-class CompetesInView(generics.CreateAPIView):
-    serializer_class = IntramuralsSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, intramural_id):
-        intramural = Intramurals.objects.filter(intramural_id=intramural_id).first()
-        if not intramural:
-            raise ValidationError('Intramural tournament not found.')
-
-        tracked_user = Tracked.objects.filter(username=request.user).first()
-        if not tracked_user:
-            raise ValidationError('Tracked user not found.')
-
-        # Check if the user is already enrolled
-        if CompetesIn.objects.filter(tracked=tracked_user, intramural_id=intramural).exists():
-            return Response({'error': 'User is already enrolled in the tournament.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Create a new CompetesIn object to store the enrollment information
-        new_competitor = CompetesIn(tracked=tracked_user, intramural_id=intramural)
-        new_competitor.save()
-
-        return Response({'success': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)
