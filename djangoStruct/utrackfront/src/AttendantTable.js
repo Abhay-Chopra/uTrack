@@ -6,14 +6,8 @@ function AttendantTable() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const handleDateSelect = () => {
-    setShowDatePicker(true);
-  };
-
-  const handleClose = () => {
-    setShowDatePicker(false);
-  };
+  const [disabled, setDisabled] = useState(false);
+  const [checkInTime, setCheckInTime] = useState("");
 
   useEffect(() => {
     axios
@@ -30,6 +24,18 @@ function AttendantTable() {
   const handleSelect = (user) => {
     setSelectedUser(user);
     setShowDatePicker(true);
+
+    axios
+      .get(`http://127.0.0.1:8000/api/get_Checkins/last/${user.username}/`)
+      .then((response) => {
+        setDisabled(false);
+        setCheckInTime(response.data.check_in_time);
+        console.log(response.data.check_in_time);
+        console.log(checkInTime);
+      })
+      .catch((error) => {
+        setDisabled(true);
+      });
   };
 
   const handleDatePickPopupClose = () => {
@@ -66,6 +72,8 @@ function AttendantTable() {
         <DatePickPopup
           user={selectedUser}
           handleClose={handleDatePickPopupClose}
+          disabled={disabled}
+          checkInTime={checkInTime}
         />
       )}
     </div>
