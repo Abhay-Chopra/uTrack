@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import DatePickPopup from './DatePickPopup';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import DatePickPopup from "./DatePickPopup";
 
 function AttendantTable() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [checkInTime, setCheckInTime] = useState('');
+  const [checkInTime, setCheckInTime] = useState("");
 
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:8000/api/get_Users/')
+      .get("http://127.0.0.1:8000/api/get_Users/")
       .then((response) => {
         setUsers(response.data);
         console.log(response.data);
@@ -57,7 +57,13 @@ function AttendantTable() {
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.username}>
+            <tr
+              key={user.username}
+              style={{
+                color: user === selectedUser ? "green" : "white",
+              }}
+              onClick={() => handleSelect(user)}
+            >
               <td>{user.username} </td>
               <td>{user.first_name}</td>
               <td>{user.last_name}</td>

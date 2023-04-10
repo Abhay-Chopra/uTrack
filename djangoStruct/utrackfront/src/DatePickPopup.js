@@ -82,7 +82,24 @@ function DatePickerPopup(props) {
           }}
         />
       </div>
-      <button onClick={handleSubmit}>Submit</button>
+      <button
+        style={{
+          width: "60px",
+          margin: "10px",
+        }}
+        onClick={props.handleClose}
+      >
+        Back
+      </button>
+      <button
+        onClick={handleSubmit}
+        style={{
+          width: "60px",
+          margin: "10px",
+        }}
+      >
+        Submit
+      </button>
     </div>
   );
 }

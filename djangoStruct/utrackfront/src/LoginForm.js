@@ -120,7 +120,7 @@ function LoginForm({ history }) {
 
 const styles = {
   buttonStyles: {
-    width: "15%",
+    width: "60px",
     margin: "10px",
   },
   errorMess: {
