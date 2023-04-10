@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
@@ -64,7 +65,7 @@ class Oversees(models.Model):
 
 
 class ActiveLivingFacility(models.Model):
-    facility_id = models.IntegerField(max_length=15, primary_key=True)
+    facility_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
 
     def __str__(self):
         return self.facility_id
@@ -136,7 +137,7 @@ class LooksAt(models.Model):
 
 
 class Intramurals(models.Model):
-    intramural_id = models.IntegerField(max_length=15, primary_key=True)
+    intramural_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
     intramural_team = models.CharField(max_length=50)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
@@ -145,7 +146,7 @@ class Intramurals(models.Model):
 
 
 class Class(models.Model):
-    class_id = models.IntegerField(max_length=15, primary_key=True)
+    class_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -166,7 +167,7 @@ def validatePositive(value):
 
 
 class Equipment(models.Model):
-    equipment_id = models.IntegerField(max_length=15, primary_key=True)
+    equipment_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
     description = models.CharField(max_length=50)
     cost = models.FloatField(validators=[validatePositive])
@@ -175,7 +176,7 @@ class Equipment(models.Model):
         return f"{self.equipment_id}; {self.facility_id}; {self.description}; {self.cost}"
 
 
-# Assuming coaches and verifiers can rent equipment by using username instead of tracked
+# Assuming coaches and verifiers can rent equipment (using username instead of tracked)
 class RentsEquipment(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username')
     equipment_id = models.ForeignKey(Equipment, on_delete=models.CASCADE)

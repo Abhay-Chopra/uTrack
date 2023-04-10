@@ -3,7 +3,6 @@ from . models import *
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
 
-
 ### SERIALIZERS FOR EACH MODEL ###
 
 class UserSerializer(serializers.ModelSerializer):
@@ -169,22 +168,7 @@ class CompetesInSerializer(serializers.ModelSerializer):
         fields = ['tracked', 'intramural_id']
 
 
-
 ######################################################################
-
-
-### SERIALIZERS FOR VIEWS THAT ALLOW USERS TO CREATE NEW INSTANCES OF A DATA MODEL ###
-
-
-######################################################################
-
-
-### TODO: SERIALIZERS FOR VIEWS THAT RETURN A LIST OF INSTANCES OF A DATA MODEL ###
-
-# need to include the subset of fields that are relevant to the user in the serializer
-
-######################################################################
-
 
 ### SERIALIZERS FOR VIEWS THAT REQUIRE AUTHORIZATION OR AUTHENTICAION ###
 
