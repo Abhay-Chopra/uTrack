@@ -61,10 +61,20 @@ class OverseesSerializer(serializers.ModelSerializer):
 
 
 class TrackedSessionsSerializer(serializers.ModelSerializer):
+    time_in_facility = serializers.SerializerMethodField(method_name='calculate_time')
+    
     class Meta:
         model = TrackedSessions
-        fields = ['tracked_username', 'facility_id', 'check_in_time', 'check_out_time']
+        fields = ['tracked_username', 'facility_id', 'check_in_time', 'check_out_time', 'time_in_facility']
 
+    def calculate_time(self, instance):
+        if instance.check_in_time != None and instance.check_out_time != None:
+            time_elapsed =  instance.check_out_time - instance.check_in_time
+            # Getting the hours and minutes of the elapsed time
+            hours, remainder = divmod(time_elapsed.seconds, 3600)
+            minutes, _ = divmod(remainder, 60)
+            return f"{hours} hours, {minutes} minutes"
+        return None
 
 class AlumnusSerializer(serializers.ModelSerializer):
     class Meta:
