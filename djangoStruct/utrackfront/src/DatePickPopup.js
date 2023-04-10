@@ -39,14 +39,16 @@ function DatePickerPopup(props) {
         check_out_time: checkOutTime,
       })
       .then((response) => {
-        axios
-          .delete(
-            `http://127.0.0.1:8000/api/Checkout/last/${tracked_username}/`
-          )
-          .then((response) => {})
-          .catch((error) => {
-            console.log(error);
-          });
+        if (props.disabled === false) {
+          axios
+            .delete(
+              `http://127.0.0.1:8000/api/Checkout/last/${tracked_username}/`
+            )
+            .then((response) => {})
+            .catch((error) => {
+              console.log(error);
+            });
+        }
       })
       .catch((error) => {
         console.log(error);
