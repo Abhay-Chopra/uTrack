@@ -11,7 +11,7 @@ urlpatterns = [
 	path('api/auth/register/', UserRegistrationView.as_view()),
     
 	# HANDLING GENERAL DATA
-	path('api/get_users/', AllUsersView.as_view()),    
+	path('api/get_Users/', AllUsersView.as_view()),    
 	path('api/get_classes/', AllClassesView.as_view()),
     path('api/get_intramurals/', AllIntramuralsView.as_view()),
     path('api/get_equipment/', AllEquipmentView.as_view()),	
