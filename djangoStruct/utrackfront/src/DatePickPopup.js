@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useMemo, useReducer } from "react";
 import {
   DateTimePickerComponent,
   ChangeEventArgs,
@@ -10,7 +9,6 @@ import axios from "axios";
 function DatePickerPopup(props) {
   let checkOutTime = null;
   let checkInTime = null;
-  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const handleCheckinChange = (ChangeEventArgs) => {
     checkInTime = format(ChangeEventArgs.value, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
@@ -26,8 +24,6 @@ function DatePickerPopup(props) {
   const handleSubmit = () => {
     const tracked_username = props.user.username;
     const facility_id = "1";
-    console.log(props.disabled);
-    console.log(props.checkInTime);
     if (props.disabled === false) {
       checkInTime = props.checkInTime;
     }
@@ -45,13 +41,12 @@ function DatePickerPopup(props) {
               `http://127.0.0.1:8000/api/Checkout/last/${tracked_username}/`
             )
             .then((response) => {})
-            .catch((error) => {
-              console.log(error);
-            });
+            .catch((error) => {});
         }
+        props.setSuccess("Request successful.");
       })
       .catch((error) => {
-        console.log(error);
+        props.setFailure("Invalid entry. Try again.");
       });
     props.handleClose();
   };
@@ -82,7 +77,24 @@ function DatePickerPopup(props) {
           }}
         />
       </div>
-      <button onClick={handleSubmit}>Submit</button>
+      <button
+        style={{
+          width: "60px",
+          margin: "10px",
+        }}
+        onClick={props.handleClose}
+      >
+        Back
+      </button>
+      <button
+        onClick={handleSubmit}
+        style={{
+          width: "60px",
+          margin: "10px",
+        }}
+      >
+        Submit
+      </button>
     </div>
   );
 }

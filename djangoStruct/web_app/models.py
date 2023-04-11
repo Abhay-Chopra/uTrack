@@ -37,7 +37,7 @@ class Tracked(models.Model):
     def __str__(self):
         return f"{self.username}; {self.goal_hours}"
 
-
+###### DO THIS ######
 class HoursReport(models.Model):
     username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
     hours = models.DecimalField(max_digits=5, decimal_places=2)
@@ -45,7 +45,7 @@ class HoursReport(models.Model):
     def __str__(self):
         return f"{self.username}; {self.hours}"
 
-
+###### DO THIS ######
 class ApplicationReviewer(models.Model):
     verifier_username = models.ForeignKey(Verifier, on_delete=models.CASCADE)
     tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
@@ -66,9 +66,10 @@ class Oversees(models.Model):
 
 class ActiveLivingFacility(models.Model):
     facility_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
+    facility_name = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
-        return self.facility_id
+        return f"{self.facility_id}; {self.facility_name}"
 
 
 class TrackedSessions(models.Model):
@@ -96,6 +97,7 @@ class Student(models.Model):
         return self.username
 
 
+###### DO THIS ######
 class DinosMember(models.Model):
     username = models.ForeignKey(Student, on_delete=models.CASCADE)
     dinos_team = models.CharField(max_length=100)
@@ -103,20 +105,22 @@ class DinosMember(models.Model):
     def __str__(self):
         return f"{self.username}; {self.dinos_team}"
 
+
+###### DO THIS ######
 class WorksAt(models.Model):
-    username = models.ForeignKey(Attendant, on_delete=models.CASCADE)
+    attendant_username = models.ForeignKey(Attendant, on_delete=models.CASCADE)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.username}; {self.facility_id}"
+        return f"{self.attendant_username}; {self.facility_id}"
 
 
-class FacilityUsage(models.Model):
-    username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
+class UsesFacility(models.Model):
+    tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.username}; {self.facility_id}"
+        return f"{self.tracked_username}; {self.facility_id}"
 
 
 class ChecksIn(models.Model):
@@ -127,6 +131,7 @@ class ChecksIn(models.Model):
         return f"{self.attendant_username}; {self.tracked_username}"
 
 
+###### DO THIS ######
 class LooksAt(models.Model):
     verifier_username = models.ForeignKey(Verifier, on_delete=models.CASCADE)
     tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
@@ -136,13 +141,13 @@ class LooksAt(models.Model):
         return f"{self.verifier_username}; {self.tracked_username}; {self.hours}"
 
 
-class Intramurals(models.Model):
+class Intramural(models.Model):
     intramural_id = models.IntegerField(primary_key=True, validators=[MaxValueValidator(15)])
-    intramural_team = models.CharField(max_length=50)
+    intramural_name = models.CharField(max_length=50, unique=True)
     facility_id = models.ForeignKey(ActiveLivingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.intramural_id}; {self.intramural_team}; {self.facility_id}"
+        return f"{self.intramural_id}; {self.intramural_name}; {self.facility_id}"
 
 
 class Class(models.Model):
@@ -187,7 +192,7 @@ class RentsEquipment(models.Model):
 
 class CompetesIn(models.Model):
     tracked_username = models.ForeignKey(Tracked, on_delete=models.CASCADE)
-    intramural_id = models.ForeignKey(Intramurals, on_delete=models.CASCADE)
+    intramural_id = models.ForeignKey(Intramural, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.tracked_username}; {self.intramural_id}"

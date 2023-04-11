@@ -104,7 +104,8 @@ class CheckOutView(APIView):
         # Deleting the ongoing session
         queryset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+
 ########################################################
 
 ###### VIEWS THAT HANDLE GENERAL DATA ######
@@ -120,16 +121,187 @@ class AllUsersView(APIView):
         return Response(seralizer.data, status=status.HTTP_200_OK)
 
 
+# Handles all the classes in the database
 class AllClassesView(APIView):
-    pass
+
+    # Retrieve all the classes
+    def get(self, request):
+        all_classes = Class.objects.all()
+        serializer = ClassSerializer(all_classes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Create a new class
+    def post(self, request):
+        # Get the info from the request data
+        class_id = request.data.get('class_id')
+        facility_id = request.data.get('facility_id')
+
+        # Check if the class exists
+        class_obj = Class.objects.filter(class_id=class_id)
+        if class_obj.exists():
+            return Response({'error': 'Class already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new class object
+        class_obj = Class(class_id=class_id, facility_id=facility_id)
+
+        # Serialize and save the Class object
+        serializer = ClassSerializer(data=class_obj.__dict__)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete a class
+    def delete(self, request):
+        # Get and validate the Class
+        class_id = request.data.get('class_id')
+        class_obj = Class.objects.filter(class_id=class_id)
+        if not class_obj.exists():
+            return Response({'error': 'No such class exists.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the class
+        class_obj.delete()
+
+        return Response({'success': 'Class deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
 
+# Handles all the intramurals in the database
 class AllIntramuralsView(APIView):
-    pass
+
+    # Retrieve all the intramurals
+    def get(self, request):
+        all_intramurals = Intramural.objects.all()
+        serializer = IntramuralSerializer(all_intramurals, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Create a new intramural
+    def post(self, request):
+        # Get the info from the request data
+        intramural_id = request.data.get('intramural_id')
+        intramural_name = request.data.get('intramural_name')
+        facility_id = request.data.get('facility_id')
+
+        # Check if the intramural exists
+        intramural_obj = Intramural.objects.filter(intramural_id=intramural_id)
+        if intramural_obj.exists():
+            return Response({'error': 'Intramural already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new intramural object
+        intramural_obj = Intramural(intramural_id=intramural_id, intramural_name=intramural_name, facility_id=facility_id)
+
+        # Serialize and save the Intramural object
+        serializer = IntramuralSerializer(data=intramural_obj.__dict__)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete an intramural
+    def delete(self, request):
+        # Get and validate the intramural
+        intramural_id = request.data.get('intramural_id')
+        intramural_obj = Intramural.objects.filter(intramural_id=intramural_id)
+        if not intramural_obj.exists():
+            return Response({'error': 'No such intramural exists.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the intramural
+        intramural_obj.delete()
+
+        return Response({'success': 'Intramural deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
 
+# Handles all the equipment in the database
 class AllEquipmentView(APIView):
-    pass
+
+    # Retrieve all the equipment
+    def get(self, request):
+        all_equipment = Equipment.objects.all()
+        serializer = EquipmentSerializer(all_equipment, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Create new equipment
+    def post(self, request):
+        # Get the info from the request data
+        equipment_id = request.data.get('equipment_id')
+        facility_id = request.data.get('facility_id')
+        description = request.data.get('description')
+        cost = request.data.get('cost')
+
+        # Check if the equipment exists
+        equipment_obj = Equipment.objects.filter(equipment_id=equipment_id)
+        if equipment_obj.exists():
+            return Response({'error': 'Equipment already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new equipment object
+        equipment_obj = Equipment(equipment_id=equipment_id, facility_id=facility_id, description=description, cost=cost)
+
+        # Serialize and save the Equipment object
+        serializer = EquipmentSerializer(data=equipment_obj.__dict__)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete equipment
+    def delete(self, request):
+        # Get and validate the equipment
+        equipment_id = request.data.get('equipment_id')
+        equipment_obj = Equipment.objects.filter(equipment_id=equipment_id)
+        if not equipment_obj.exists():
+            return Response({'error': 'No such equipment exists.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the equipment
+        equipment_obj.delete()
+
+        return Response({'success': 'Equipment deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Handles all the facilities in the database
+class AllFacilitiesView(APIView):
+
+    # Retrieve all the facilites
+    def get(self, request):
+        all_facilities = ActiveLivingFacility.objects.all()
+        serializer = ActiveLivingFacilitySerializer(all_facilities, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Create a new facility
+    def post(self, request):
+        # Get the info from the request data
+        facility_id = request.data.get('facility_id')
+        facility_name = request.data.get('facility_name')
+
+        # Check if the facility exists
+        facility_obj = ActiveLivingFacility.objects.filter(facility_id=facility_id)
+        if facility_obj.exists():
+            return Response({'error': 'Facility already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new facility object
+        facility_obj = ActiveLivingFacility(facility_id, facility_name=facility_name)
+
+        # Serialize and save the facility object
+        serializer = ActiveLivingFacilitySerializer(data=facility_obj.__dict__)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete a facility
+    def delete(self, request):
+        # Get and validate the facility
+        facility_id = request.data.get('facility_id')
+        facility_obj = ActiveLivingFacility.objects.filter(facility_id=facility_id)
+        if not facility_obj.exists():
+            return Response({'error': 'No such facility exists.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the facility
+        facility_obj.delete()
+
+        return Response({'success': 'Facility deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
 
 ######################################################
@@ -137,7 +309,7 @@ class AllEquipmentView(APIView):
 ###### VIEWS THAT HANDLE USER-SPECIFIC DATA ######
 
 
-# The classes a user participates in
+# Handles users' classes
 class UserClassesView(APIView):
     serializer_class = EnrolledIn
     permission_classes = [AllowAny]
@@ -147,159 +319,229 @@ class UserClassesView(APIView):
         # Returns a single object
         valid_user = get_object_or_404(User, pk=username)
 
-        # Returns a queryset
-        enrolled_in = EnrolledIn.objects.filter(username=valid_user)
+        # Returns a set of objects
+        queryset = EnrolledIn.objects.filter(username=valid_user)
 
-        class_ids = [enrollment.class_id for enrollment in enrolled_in]
-        classes = Class.objects.filter(id__in=class_ids)
+        # Validate its existence 
+        if not queryset.exists():
+            return Response({'error': 'No classes for this user.'}, status=status.HTTP_404_NOT_FOUND)
+
+        class_ids = [enrollment.class_id for enrollment in queryset]
+        classes = Class.objects.filter(class_id__in=class_ids)
 
         # many=True as it serializes a collection of objects
         serializer = ClassSerializer(classes, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # Update the user's classes
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # Allow the user to enroll in a class
+    def post(self, request, username):
+        # Get the user and class_id from the request data
+        user = get_object_or_404(User, pk=username)
+        class_id = request.data.get('class_id')
+
+        # Check if the class exists
+        class_obj = get_object_or_404(Class, class_id=class_id)
+
+        # Check if the user is already enrolled in the class
+        if EnrolledIn.objects.filter(username=user, class_id=class_obj).exists():
+            return Response({'error': 'User already enrolled in this class.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new EnrolledIn object
+        enrollment = EnrolledIn(username=user, class_id=class_obj)
+
+        # Serialize and save the EnrolledIn object
+        serializer = EnrolledInSerializer(data=enrollment.__dict__)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Allow the user to cease enrollment in a class
+    def delete(self, request, username):
+        # Get and validate the user
+        valid_user = get_object_or_404(User, pk=username)
+
+        # Get and validate the class
+        class_id = request.data.get('class_id')
+        class_obj = get_object_or_404(Class, class_id=class_id)
+
+        # Get and validate the enrollment
+        enrolled_in = EnrolledIn.objects.filter(username=valid_user, class_id=class_obj)  #
+        if not enrolled_in.exists():
+            return Response({'error': 'No enrollment for this user and class.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the enrollment
+        enrolled_in.delete()
+
+        return Response({'success': 'Enrollment deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-# The intramurals a user participates in
+# Handles users' intramurals
 class UserIntramuralsView(APIView):
-
     serializer_class = CompetesIn
     permission_classes = [AllowAny]
 
+    # Retrieve the user's intramurals
     def get(self, request, tracked_username):
-        queryset = CompetesIn.objects.filter(tracked_username=tracked_username)
+        # Returns a single object
+        valid_user = get_object_or_404(User, pk=tracked_username)
+
+        # Returns a set of objects
+        queryset = CompetesIn.objects.filter(tracked_username=valid_user)
+
+        # Validate its existence 
         if not queryset.exists():
-            return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(queryset)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+            return Response({'error': 'No intramurals for this user.'}, status=status.HTTP_404_NOT_FOUND)
+
+        intramural_ids = [intramural.id for intramural in queryset]
+        intramurals = Intramural.objects.filter(intramural_id__in=intramural_ids)
+
+        # many=True as it serializes a collection of objects
+        serializer = IntramuralSerializer(intramurals, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # Allow the user to enroll in an intramural tournament
+    def post(self, request, tracked_username):
+        # Get the user and intramural_id from the request data
+        user = get_object_or_404(User, pk=tracked_username)
+        intramural_id = request.data.get('intramural_id')
 
-# The equipment a user rents
+        # Check if the intramural exists
+        intramural_obj = get_object_or_404(Intramural, intramural_id=intramural_id)
+
+        # Check if the user is already enrolled in the intramural
+        if CompetesIn.objects.filter(tracked_username=user, intramural_id=intramural_obj).exists():
+            return Response({'error': 'User already enrolled in this intramural.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new CompetesIn object
+        competes = CompetesIn(tracked_username=user, intramural_id=intramural_obj)
+
+        # Serialize and save the CompetesIn object
+        serializer = CompetesInSerializer(data=competes.__dict__)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Allow the user to cease inscription in an intramural
+    def delete(self, request, tracked_username):
+        # Get and validate the user
+        valid_user = get_object_or_404(User, pk=tracked_username)
+
+        # Get and validate the intramural
+        intramural_id = request.data.get('intramural_id')
+        intramural_obj = get_object_or_404(Intramural, intramural_id=intramural_id)
+
+        # Get and validate the intramural inscription
+        competes_in = CompetesIn.objects.filter(username=valid_user, intramural_id=intramural_obj)
+        if not competes_in.exists():
+            return Response({'error': 'No inscription for this user and intramural.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the inscription
+        competes_in.delete()
+
+        return Response({'success': 'Inscription deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Handles users' equipment
 class UserEquipmentView(APIView):
-
     serializer_class = RentsEquipment
     permission_classes = [AllowAny]
 
+    # Retrieve the user's equipment
     def get(self, request, username):
-        queryset = RentsEquipment.objects.filter(username=username)
+        # Returns a single object
+        valid_user = get_object_or_404(User, pk=username)
+
+        # Returns a set of objects
+        queryset = RentsEquipment.objects.filter(username=valid_user)
+
+        # Validate its existence 
         if not queryset.exists():
-            return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(queryset)
+            return Response({'error': 'No equipment for this user.'}, status=status.HTTP_404_NOT_FOUND)
+
+        equipment_ids = [equipment.id for equipment in queryset]
+        equipments = Equipment.objects.filter(equipment_id__in=equipment_ids)
+
+        # many=True as it serializes a collection of objects
+        serializer = EquipmentSerializer(equipments, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+
+    # Allow the user to rent equipment
+    def post(self, request, username):
+        # Get the user and intramural_id from the request data
+        user = get_object_or_404(User, pk=username)
+        equipment_id = request.data.get('equipment_id')  # just realized inputting ids wouldn't be easy for users
+
+        # Check if the intramural exists
+        equipment_obj = get_object_or_404(Equipment, equipment_id=equipment_id)
+
+        # Check if the user has already rented the equipment
+        if RentsEquipment.objects.filter(username=user, equipment_id=equipment_obj).exists():
+            return Response({'error': 'User has already rented this equipment.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new RentsEquipment object
+        rents = RentsEquipment(username=user, equipment_id=equipment_obj)
+
+        # Serialize and save the RentsEquipment object
+        serializer = RentsEquipmentSerializer(data=rents.__dict__)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Allow the user to stop renting equipment
+    def delete(self, request, username):
+        # Get and validate the user
+        valid_user = get_object_or_404(User, pk=username)
+
+        # Get and validate the equipment
+        equipment_id = request.data.get('equipment_id')
+        equipment_obj = get_object_or_404(Equipment, equipment_id=equipment_id)
+
+        # Get and validate the equipment renting
+        rents_equipment = RentsEquipment.objects.filter(username=valid_user, equipment_id=equipment_obj)
+        if not rents_equipment.exists():
+            return Response({'error': 'No such equipment for this user.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the equipment
+        rents_equipment.delete()
+
+        return Response({'success': 'Equipment deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Handles user's facilities
+class UserFacilitiesView(APIView):
+    serializer_class = UsesFacility
+    permission_classes = [AllowAny]
+
+    # Retrieve the user's used facilities
+    def get(self, request, tracked_username):
+        # Returns a single object
+        valid_user = get_object_or_404(User, pk=tracked_username)
+
+        # Returns a set of objects
+        queryset = UsesFacility.objects.filter(tracked_username=valid_user)
+
+        # Validate its existence 
+        if not queryset.exists():
+            return Response({'error': 'No facilites for this user.'}, status=status.HTTP_404_NOT_FOUND)
+
+        facility_ids = [facility.id for facility in queryset]
+        facilites = ActiveLivingFacility.objects.filter(facility_id__in=facility_ids)
+        
+        # many=True as it serializes a collection of objects
+        serializer = ActiveLivingFacilitySerializer(facilites, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # No post or delete as the user shouldn't be allowed to modify the facilities he's used
 
 
 ######################################################
-
-#### VIEWS THAT UPDATE USER-SPECIFIC DATA IN THE DB ####
-
-###TODO: INCORPORATE THESE VIEWS INTO THE ONES ABOVE
-### TO REDUCE REDUNDANCY
-
-# Allows a Tracked user to enroll in a class
-class EnrolledInView(generics.CreateAPIView):
-
-    queryset = EnrolledIn.objects.all()
-    serializer_class = EnrolledInSerializer
-
-    # TODO: any type of user should be able to register in classes
-    def perform_create(self, serializer):
-        class_id = self.request.data.get('class_id')
-        username = self.request.data.get('username')
-
-        # Validate inputs
-        if not class_id or not username:
-            raise ValidationError("Please provide class_id and username.")
-
-        tracked = get_object_or_404(Tracked, pk=username)
-        class_ = get_object_or_404(Class, pk=class_id)
-
-        # Check if user is already enrolled in the class
-        if EnrolledIn.objects.filter(username=tracked, class_id=class_).exists():
-            raise ValidationError("User is already enrolled in this class.")
-
-        # Create enrollment
-        enrollment = serializer.save(username=tracked, class_id=class_)
-
-        return enrollment
-
-
-# Allows a user to compete in an intramural tournament
-class CompetesInView(generics.CreateAPIView):
-    serializer_class = IntramuralsSerializer
-    second_serializer = CompetesInSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, intramural_id):
-        intramural = Intramurals.objects.filter(intramural_id=intramural_id).first()
-        if not intramural:
-            raise ValidationError('Intramural tournament not found.')
-
-        tracked_user = Tracked.objects.filter(username=request.user).first()
-        if not tracked_user:
-            raise ValidationError('Tracked user not found.')
-
-        # Check if the user is already enrolled
-        if CompetesIn.objects.filter(tracked=tracked_user, intramural_id=intramural).exists():
-            return Response({'error': 'User is already enrolled in the tournament.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Create a new CompetesIn object to store the enrollment information
-        new_competitor = CompetesIn(tracked=tracked_user, intramural_id=intramural)
-        new_competitor.save()
-
-        return Response({'success': 'User has been successfully enrolled in the tournament.'}, status=status.HTTP_201_CREATED)
-
-
-# Allows a user to rent equipment
-class RentsEquipmentView(generics.CreateAPIView):
-
-    serializer_class = RentsEquipmentSerializer
-
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        rental_data = request.data
-
-        # Validate the rental data
-        serializer = RentsEquipmentSerializer(data=rental_data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # Get the equipment rental instance to update
-        equipment_id = rental_data.get('equipment_id')
-        try:
-            equipment_rental = RentsEquipment.objects.get(equipment_id=equipment_id)
-        except RentsEquipment.DoesNotExist:
-            return Response({'error': 'Equipment rental not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Check if the user is allowed to rent equipment
-        if not user.tracked:  # look more into this
-            return Response({'error': 'User is not a Tracked user.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if the user has already rented the equipment
-        if equipment_rental.tracked.filter(username=user.tracked).exists():  # look more into this
-            return Response({'error': 'User has already rented this equipment.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Rent the equipment
-        equipment_rental.tracked.add(user.tracked)
-        equipment_rental.save()
-
-        # Return a success response
-        return Response({'success': 'Equipment rental added successfully.'}, status=status.HTTP_201_CREATED)
-
