@@ -38,7 +38,7 @@ function LoginForm({ history }) {
       })
       .then((response) => {
         if (!isUser) {
-          history.push("/attendant");
+          history.push("/attendant", { params: response.data.name });
           history.go(0);
         } else {
           history.push("/user");
