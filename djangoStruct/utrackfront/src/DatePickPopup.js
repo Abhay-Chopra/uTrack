@@ -5,10 +5,21 @@ import {
 import "./Date.css";
 import { format } from "date-fns";
 import axios from "axios";
+import { useState } from "react";
 
 function DatePickerPopup(props) {
   let checkOutTime = null;
   let checkInTime = null;
+  let facility = "1";
+
+  const facilities = [
+    { name: "Fitness Center", value: "1" },
+    { name: "Aquatic Center", value: "2" },
+    { name: "Racquet Center", value: "3" },
+    { name: "Gymnastic Center", value: "4" },
+    { name: "Bouldering Wall", value: "5" },
+    { name: "Outdoor Center", value: "6" },
+  ];
 
   const handleCheckinChange = (ChangeEventArgs) => {
     checkInTime = format(ChangeEventArgs.value, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
@@ -23,7 +34,7 @@ function DatePickerPopup(props) {
 
   const handleSubmit = () => {
     const tracked_username = props.user.username;
-    const facility_id = "1";
+    const facility_id = facility;
     if (props.disabled === false) {
       checkInTime = props.checkInTime;
     }
@@ -77,6 +88,28 @@ function DatePickerPopup(props) {
           }}
         />
       </div>
+
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <label>Facility:</label>
+        <select
+          onChange={(event) => {
+            facility = event.target.value;
+          }}
+          style={{
+            width: "135px",
+            margin: "0 auto",
+            marginTop: "10px",
+          }}
+        >
+          <option value="1">Fitness Center</option>
+          <option value="2">Aquatic Center</option>
+          <option value="3">Racquet Center</option>
+          <option value="4">Gymnastic Center</option>
+          <option value="5">Bouldering Wall</option>
+          <option value="6">Outdoor Center</option>
+        </select>
+      </div>
+
       <button
         style={{
           width: "60px",

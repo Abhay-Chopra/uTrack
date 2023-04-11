@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DatePickPopup from "./DatePickPopup";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 function AttendantTable() {
   const [users, setUsers] = useState([]);
@@ -11,8 +11,20 @@ function AttendantTable() {
   const [checkInTime, setCheckInTime] = useState("");
   const [success, setSuccess] = useState("");
   const [failure, setFailure] = useState("");
+  let attendantName = "";
 
   const history = useHistory();
+  const location = useLocation();
+  attendantName = location.state.params;
+
+  const facilities = [
+    { name: "Fitness Center", value: "1" },
+    { name: "Aquatic Center", value: "2" },
+    { name: "Racquet Center", value: "3" },
+    { name: "Gymnastic Center", value: "4" },
+    { name: "Bouldering Wall", value: "5" },
+    { name: "Outdoor Center", value: "6" },
+  ];
 
   useEffect(() => {
     axios
@@ -52,7 +64,10 @@ function AttendantTable() {
 
   return (
     <div>
-      <h2>Attendant Name: John Doe</h2>
+      <h2>
+        <span>Attendant Name: </span>
+        <span>{attendantName}</span>
+      </h2>
       <table>
         <thead>
           <tr>
