@@ -58,12 +58,18 @@ class CheckInSystemView(APIView):
     # TODO: Have this available to authenticated users only (leave this for now, come back after features are implemented)
     permission_classes = [AllowAny]
 
-    def get(self, request, tracked_username):
+    def get(self, request):
+        tracked_username = request.GET.get('tracked_username', None)
+        # Confirming that the endpoint got a username
+        if not tracked_username:
+            return Response({'error': 'Username not provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
         queryset = TrackedSessions.objects.filter(tracked_username=tracked_username)
+        
         # Returns a 404 Response if there are no entries for the user
         if not queryset.exists():
             return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(queryset)
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
