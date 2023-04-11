@@ -227,10 +227,10 @@ class UserLoginSerializer(serializers.Serializer):
             username=data.get('username'),
             password=data.get('password')
         )
-        if not user.is_active:
-            raise ValidationError("Inactive User")
         if not user:
             raise ValidationError("Invalid login credentials")
+        if not user.is_active:
+            raise ValidationError("Inactive User")
 
         return user
 

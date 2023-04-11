@@ -70,7 +70,18 @@ class CheckInSystemView(APIView):
         if not queryset.exists():
             return Response({'error': 'No entries for this user.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        response_data = []
+        for each in serializer.data:
+            date_str = each['check_in_time']
+            time_in_facility = each['time_in_facility']
+            # Making sure we don't return any redundant session entries
+            if time_in_facility == '0 hours, 0 minutes':
+                continue
+            response_data.append({'facility_id':each['facility_id'],'date':datetime.fromisoformat(date_str[:-1]).date(), 'time_in_facility':time_in_facility})
+
+        # Returning the response_data array that was created
+        return Response(response_data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
