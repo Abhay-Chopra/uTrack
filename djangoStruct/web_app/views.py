@@ -50,7 +50,7 @@ class UserLoginView(ObtainAuthToken):
         else:
             update_last_login(None, user)
             token, _ = Token.objects.get_or_create(user=user)  # _ discards the boolean value
-            return Response({"status":status.HTTP_200_OK, 'token': token.key})
+            return Response({"status":status.HTTP_200_OK, 'token': token.key, 'name': f"{user.first_name} {user.last_name}"})
 
 
 class CheckInSystemView(APIView):
