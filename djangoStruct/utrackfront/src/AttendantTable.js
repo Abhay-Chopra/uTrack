@@ -63,7 +63,7 @@ function AttendantTable() {
   };
 
   return (
-    <div>
+    <div style={{ height: "400px", overflow: "scroll" }}>
       <h2>
         <span>Attendant Name: </span>
         <span>{attendantName}</span>

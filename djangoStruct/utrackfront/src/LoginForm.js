@@ -4,7 +4,7 @@ import axios from "axios";
 function LoginForm({ history }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [group, setGroup] = useState("");
+  const [group, setGroup] = useState("Tracked");
   const [isUser, setIsUser] = useState(true);
   const [error, setError] = useState("");
 
@@ -41,7 +41,7 @@ function LoginForm({ history }) {
           history.push("/attendant", { params: response.data.name });
           history.go(0);
         } else {
-          history.push("/user");
+          history.push("/user", { params: response.data.name });
           history.go(0);
         }
       })

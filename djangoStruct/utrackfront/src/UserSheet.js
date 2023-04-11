@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from "react";
-
-function UserSheet() {
+import UserTable from "./UserTable";
+function UserSheet(props) {
   return (
     <div
       className="UserPage"
       style={{
-        background: "linear-gradient(to bottom right, #E35335, #eb8100)",
-        height: "100vh",
+        position: "fixed",
+        top: "55%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        backgroundColor: "#F08000",
+        borderRadius: 30,
+        borderWidth: "thick",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        width: "35%",
       }}
     >
-      <h1 style={{ color: "white", fontSize: "32px", fontWeight: "bold" }}>
-        User Page
-      </h1>
-      <p style={{ color: "white", fontSize: "18px", marginTop: "10px" }}>
-        Welcome to the User Page!
+      <p style={{ color: "white", fontSize: "18px", marginTop: "5px" }}>
+        <UserTable />
       </p>
     </div>
   );
