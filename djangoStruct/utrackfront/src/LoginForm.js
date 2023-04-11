@@ -46,7 +46,6 @@ function LoginForm({ history }) {
         }
       })
       .catch((error) => {
-        console.log(error);
         setError("Invalid credentials. Please try again.");
       });
   };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DatePickPopup from "./DatePickPopup";
+import { useHistory } from "react-router-dom";
 
 function AttendantTable() {
   const [users, setUsers] = useState([]);
@@ -8,18 +9,26 @@ function AttendantTable() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [checkInTime, setCheckInTime] = useState("");
+  const [success, setSuccess] = useState("");
+  const [failure, setFailure] = useState("");
+
+  const history = useHistory();
 
   useEffect(() => {
     axios
       .get("http://127.0.0.1:8000/api/get_Users/")
       .then((response) => {
         setUsers(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        setFailure("Error getting users. Contact admin.");
       });
   }, []);
+
+  const logoutFunction = () => {
+    history.push("/");
+    history.go(0);
+  };
 
   const handleSelect = (user) => {
     setSelectedUser(user);
@@ -30,8 +39,6 @@ function AttendantTable() {
       .then((response) => {
         setDisabled(false);
         setCheckInTime(response.data.check_in_time);
-        console.log(response.data.check_in_time);
-        console.log(checkInTime);
       })
       .catch((error) => {
         setDisabled(true);
@@ -68,7 +75,15 @@ function AttendantTable() {
               <td>{user.first_name}</td>
               <td>{user.last_name}</td>
               <td>
-                <button onClick={() => handleSelect(user)}>Select</button>
+                <button
+                  onClick={() => {
+                    handleSelect(user);
+                    setSuccess("");
+                    setFailure("");
+                  }}
+                >
+                  Select
+                </button>
               </td>
             </tr>
           ))}
@@ -80,8 +95,36 @@ function AttendantTable() {
           handleClose={handleDatePickPopupClose}
           disabled={disabled}
           checkInTime={checkInTime}
+          setFailure={setFailure}
+          setSuccess={setSuccess}
         />
       )}
+      <button
+        onClick={() => {
+          logoutFunction();
+          setSuccess("");
+          setFailure("");
+        }}
+        style={{ marginTop: "1%", marginRight: "300px" }}
+      >
+        Logout
+      </button>
+      <div
+        style={{
+          fontSize: "15px",
+          color: "green",
+        }}
+      >
+        {success}
+      </div>
+      <div
+        style={{
+          fontSize: "15px",
+          color: "red",
+        }}
+      >
+        {failure}
+      </div>
     </div>
   );
 }
