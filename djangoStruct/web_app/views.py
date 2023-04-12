@@ -76,7 +76,7 @@ class CheckInSystemView(APIView):
             date_str = each['check_in_time']
             time_in_facility = each['time_in_facility']
             # Making sure we don't return any redundant session entries
-            if time_in_facility == '0 hours, 0 minutes':
+            if time_in_facility == '0 hours, 0 minutes' or not time_in_facility:
                 continue
             response_data.append({'facility_id':each['facility_id'],'date':datetime.fromisoformat(date_str[:-1]).date(), 'time_in_facility':time_in_facility})
 
