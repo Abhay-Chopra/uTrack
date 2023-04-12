@@ -4,6 +4,7 @@ import Login from "./LoginForm";
 import AttendantPage from "./AttendantSheet";
 import UserPage from "./UserSheet";
 import RegisterPage from "./RegisterSheet";
+import ExecPage from "./ExecSheet";
 import {
   BrowserRouter as Router,
   Switch,
@@ -49,6 +50,10 @@ function App() {
             <Route
               path="/register"
               render={() => <RegisterPage key={Math.random()} />}
+            />
+            <Route
+              path="/exec"
+              render={() => <ExecPage key={Math.random()} />}
             />
           </Switch>
         </Router>
