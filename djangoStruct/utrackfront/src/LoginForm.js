@@ -6,6 +6,7 @@ function LoginForm({ history }) {
   const [password, setPassword] = useState("");
   const [group, setGroup] = useState("Tracked");
   const [isUser, setIsUser] = useState(true);
+  const [isExec, setIsExec] = useState(false);
   const [error, setError] = useState("");
 
   const handleUsernameChange = (event) => {
@@ -18,12 +19,20 @@ function LoginForm({ history }) {
 
   const handleUserCheckboxChange = (event) => {
     setIsUser(true);
+    setIsExec(false);
     setGroup("Tracked");
   };
 
   const handleAttendantCheckboxChange = (event) => {
     setIsUser(false);
+    setIsExec(false);
     setGroup("Attendant");
+  };
+
+  const handleExecCheckboxChange = (event) => {
+    setIsUser(false);
+    setIsExec(true);
+    setGroup("Executive");
   };
 
   const handleSubmit = (event) => {
@@ -37,11 +46,20 @@ function LoginForm({ history }) {
         group,
       })
       .then((response) => {
-        if (!isUser) {
+        if (!isUser && !isExec) {
           history.push("/attendant", { params: response.data.name });
           history.go(0);
+        } else if (isUser) {
+          history.push("/user", {
+            params: response.data.name,
+            anotherParam: response.data.ucid,
+          });
+          history.go(0);
         } else {
-          history.push("/user", { params: response.data.name });
+          history.push("/exec", {
+            params: response.data.name,
+            anotherParam: response.data.ucid,
+          });
           history.go(0);
         }
       })
@@ -98,6 +116,15 @@ function LoginForm({ history }) {
               onChange={handleAttendantCheckboxChange}
             />{" "}
             Attendant
+          </label>
+          <label htmlFor="user-checkbox">
+            <input
+              type="checkbox"
+              id="user-checkbox"
+              checked={isExec}
+              onChange={handleExecCheckboxChange}
+            />{" "}
+            Executive
           </label>
         </div>
         <div style={styles.errorMess}>{error}</div>
