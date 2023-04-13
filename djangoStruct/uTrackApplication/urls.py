@@ -25,6 +25,7 @@ urlpatterns = [
 	path('api/get_user_classes/<str:username>', UserClassesView.as_view()),
 	path('api/get_user_intramurals/<str:tracked_username>', UserIntramuralsView.as_view()),
 	path('api/get_user_equipment/<str:username>', UserEquipmentView.as_view()),
-	path('api/get_user_facilities/<str:tracked_username>', UserEquipmentView.as_view())
+	path('api/get_user_facilities/<str:tracked_username>', UserEquipmentView.as_view()),
+	path("api/viewer/", OverseerView.as_view())
 
 ]

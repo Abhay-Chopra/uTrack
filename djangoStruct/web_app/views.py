@@ -562,3 +562,22 @@ class UserFacilitiesView(APIView):
 
 
 ######################################################
+
+# Handle coach's user list
+class OverseerView(APIView):
+    serializer_class = OverseesSerializer
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        verifier_username = request.GET.get('verifier_username', None)
+        # Confirming that the endpoint got a username => which is a verifiers
+        if not verifier_username:
+            return Response({'error': 'Username not provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.filter(username=verifier_username)
+        # Confirming that we have gotten a verfied viewer (given that the user only has one group)
+        if user.groups.first().name == "Viewer":
+            serializer = OverseesSerializer(verifier_username, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        # Reached here when usergroup is not as above
+        return Response({'error': 'You are not a verified viewer!'}, status=status.HTTP_403_FORBIDDEN)

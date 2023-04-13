@@ -1,0 +1,69 @@
+(0.062) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+
+(0.063) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+
+(0.062) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."username" = '30147232' LIMIT 21; args=('30147232',); alias=default
+
+(0.063) SELECT 1 AS "a" FROM "auth_group" INNER JOIN "auth_user_groups" ON ("auth_group"."id" = "auth_user_groups"."group_id") WHERE ("auth_user_groups"."user_id" = 31 AND "auth_group"."name" = 'Attendant') LIMIT 1; args=(1, 31, 'Attendant'); alias=default
+
+(0.062) UPDATE "auth_user" SET "last_login" = '2023-04-10T05:51:53.688155+00:00'::timestamptz WHERE "auth_user"."id" = 31; args=(datetime.datetime(2023, 4, 10, 5, 51, 53, 688155, tzinfo=datetime.timezone.utc), 31); alias=default
+
+(0.063) SELECT "authtoken_token"."key", "authtoken_token"."user_id", "authtoken_token"."created" FROM "authtoken_token" WHERE "authtoken_token"."user_id" = 31 LIMIT 21; args=(31,); alias=default
+
+(0.062) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" INNER JOIN "auth_user_groups" ON ("auth_user"."id" = "auth_user_groups"."user_id") INNER JOIN "auth_group" ON ("auth_user_groups"."group_id" = "auth_group"."id") WHERE "auth_group"."name" = 'Tracked'; args=('Tracked',); alias=default
+
+(0.047) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" INNER JOIN "auth_user_groups" ON ("auth_user"."id" = "auth_user_groups"."user_id") INNER JOIN "auth_group" ON ("auth_user_groups"."group_id" = "auth_group"."id") WHERE "auth_group"."name" = 'Tracked'; args=('Tracked',); alias=default
+
+(0.047) SELECT 1 AS "a" FROM "web_app_trackedsessions" WHERE ("web_app_trackedsessions"."tracked_username_id" = '30143943' AND "web_app_trackedsessions"."check_out_time" IS NULL) LIMIT 1; args=(1, '30143943'); alias=default
+
+(0.063) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."username" = '30143943' LIMIT 21; args=('30143943',); alias=default
+
+(0.062) INSERT INTO "web_app_trackedsessions" ("tracked_username_id", "facility_id", "check_in_time", "check_out_time") VALUES ('30143943', 1, '2023-04-09T06:20:00+00:00'::timestamptz, '2023-04-09T07:30:00+00:00'::timestamptz) RETURNING "web_app_trackedsessions"."id"; args=('30143943', 1, datetime.datetime(2023, 4, 9, 6, 20, tzinfo=zoneinfo.ZoneInfo(key='UTC')), datetime.datetime(2023, 4, 9, 7, 30, tzinfo=zoneinfo.ZoneInfo(key='UTC'))); alias=default
+
+(0.063) SELECT 1 AS "a" FROM "web_app_trackedsessions" WHERE ("web_app_trackedsessions"."tracked_username_id" = '30143943' AND "web_app_trackedsessions"."check_out_time" IS NULL) LIMIT 1; args=(1, '30143943'); alias=default
+
+(0.063) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."username" = '30143943' LIMIT 21; args=('30143943',); alias=default
+
+(0.062) INSERT INTO "web_app_trackedsessions" ("tracked_username_id", "facility_id", "check_in_time", "check_out_time") VALUES ('30143943', 1, '2023-04-13T06:00:00+00:00'::timestamptz, NULL) RETURNING "web_app_trackedsessions"."id"; args=('30143943', 1, datetime.datetime(2023, 4, 13, 6, 0, tzinfo=zoneinfo.ZoneInfo(key='UTC')), None); alias=default
+
+(0.078) SELECT 1 AS "a" FROM "web_app_trackedsessions" WHERE ("web_app_trackedsessions"."tracked_username_id" = '30143943' AND "web_app_trackedsessions"."check_out_time" IS NULL) LIMIT 1; args=(1, '30143943'); alias=default
+
+(0.047) SELECT "web_app_trackedsessions"."id", "web_app_trackedsessions"."tracked_username_id", "web_app_trackedsessions"."facility_id", "web_app_trackedsessions"."check_in_time", "web_app_trackedsessions"."check_out_time" FROM "web_app_trackedsessions" WHERE ("web_app_trackedsessions"."tracked_username_id" = '30143943' AND "web_app_trackedsessions"."check_out_time" IS NULL); args=('30143943',); alias=default
+
+(0.062) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."username" = '30143943' LIMIT 21; args=('30143943',); alias=default
+
+(0.062) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."username" = '30143943' LIMIT 21; args=('30143943',); alias=default
+
+(0.047) INSERT INTO "web_app_trackedsessions" ("tracked_username_id", "facility_id", "check_in_time", "check_out_time") VALUES ('30143943', 1, '2023-04-13T06:00:00+00:00'::timestamptz, '2023-04-09T10:50:00+00:00'::timestamptz) RETURNING "web_app_trackedsessions"."id"; args=('30143943', 1, datetime.datetime(2023, 4, 13, 6, 0, tzinfo=zoneinfo.ZoneInfo(key='UTC')), datetime.datetime(2023, 4, 9, 10, 50, tzinfo=zoneinfo.ZoneInfo(key='UTC'))); alias=default
+
+(0.063) SELECT 1 AS "a" FROM "web_app_trackedsessions" WHERE ("web_app_trackedsessions"."tracked_username_id" = '30143943' AND "web_app_trackedsessions"."check_out_time" IS NULL) LIMIT 1; args=(1, '30143943'); alias=default
+
+(0.109) DELETE FROM "web_app_trackedsessions" WHERE ("web_app_trackedsessions"."tracked_username_id" = '30143943' AND "web_app_trackedsessions"."check_out_time" IS NULL); args=('30143943',); alias=default
+(0.062) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.063) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default

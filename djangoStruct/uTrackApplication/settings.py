@@ -46,7 +46,27 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'django.contrib.sessions',
+    'django_extensions'
 ]
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'sql.txt',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

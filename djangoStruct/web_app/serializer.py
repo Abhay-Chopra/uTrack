@@ -198,7 +198,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         username = validated_data.pop('username')
         email = validated_data.pop('email')
         password = validated_data.pop('password')
-        # user_type = validated_data.pop('user_type')
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
         user = User(username=username, email=email, first_name=first_name, last_name=last_name)
@@ -209,14 +208,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         group = Group.objects.get(name=validated_data.pop('group'))
         user.groups.add(group)
         return user
-
-    ########################################################################################### DEPRACATED
-    def validate_user_type(self, value):
-        user_types = ['tracked', 'verifier', 'attendant']
-        if value not in user_types:
-            raise ValidationError(f'User type must be one of the following: {user_types}')
-        return value
-    ###########################################################################################
+    
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=8)
