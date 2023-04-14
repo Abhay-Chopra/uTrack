@@ -1,24 +1,25 @@
 import {
   DateTimePickerComponent,
   ChangeEventArgs,
-} from "@syncfusion/ej2-react-calendars";
-import "./Date.css";
-import { format } from "date-fns";
-import axios from "axios";
-import { useState } from "react";
+} from '@syncfusion/ej2-react-calendars';
+import './Date.css';
+import './App.css';
+import { format } from 'date-fns';
+import axios from 'axios';
+import { useState } from 'react';
 
 function DatePickerPopup(props) {
   let checkOutTime = null;
   let checkInTime = null;
-  let facility = "1";
+  let facility = '1';
 
   const facilities = [
-    { name: "Fitness Center", value: "1" },
-    { name: "Aquatic Center", value: "2" },
-    { name: "Racquet Center", value: "3" },
-    { name: "Gymnastic Center", value: "4" },
-    { name: "Bouldering Wall", value: "5" },
-    { name: "Outdoor Center", value: "6" },
+    { name: 'Fitness Center', value: '1' },
+    { name: 'Aquatic Center', value: '2' },
+    { name: 'Racquet Center', value: '3' },
+    { name: 'Gymnastic Center', value: '4' },
+    { name: 'Bouldering Wall', value: '5' },
+    { name: 'Outdoor Center', value: '6' },
   ];
 
   const handleCheckinChange = (ChangeEventArgs) => {
@@ -39,7 +40,7 @@ function DatePickerPopup(props) {
       checkInTime = props.checkInTime;
     }
     axios
-      .post("http://127.0.0.1:8000/api/Checkins/", {
+      .post('http://127.0.0.1:8000/api/Checkins/', {
         tracked_username,
         facility_id,
         check_in_time: checkInTime,
@@ -54,10 +55,10 @@ function DatePickerPopup(props) {
             .then((response) => {})
             .catch((error) => {});
         }
-        props.setSuccess("Request successful.");
+        props.setSuccess('Request successful.');
       })
       .catch((error) => {
-        props.setFailure("Invalid entry. Try again.");
+        props.setFailure('Invalid entry. Try again.');
       });
     props.handleClose();
   };
@@ -65,67 +66,55 @@ function DatePickerPopup(props) {
   return (
     <div>
       {props.disabled && (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           <label>Check-in Time:</label>
           <DateTimePickerComponent
-            placeholder="Choose the date and time this user came in."
+            placeholder='Choose the date and time this user came in.'
             step={10}
             change={handleCheckinChange}
             style={{
-              color: "white",
+              color: 'white',
             }}
           />
         </div>
       )}
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <label>Check-out Time:</label>
         <DateTimePickerComponent
-          placeholder="Choose the date and time this user left."
+          placeholder='Choose the date and time this user left.'
           step={10}
           change={handleCheckoutChange}
           style={{
-            color: "white",
+            color: 'white',
           }}
         />
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <label>Facility:</label>
         <select
           onChange={(event) => {
             facility = event.target.value;
           }}
           style={{
-            width: "135px",
-            margin: "0 auto",
-            marginTop: "10px",
+            width: '135px',
+            margin: '0 auto',
+            marginTop: '10px',
           }}
         >
-          <option value="1">Fitness Center</option>
-          <option value="2">Aquatic Center</option>
-          <option value="3">Racquet Center</option>
-          <option value="4">Gymnastic Center</option>
-          <option value="5">Bouldering Wall</option>
-          <option value="6">Outdoor Center</option>
+          <option value='1'>Fitness Center</option>
+          <option value='2'>Aquatic Center</option>
+          <option value='3'>Racquet Center</option>
+          <option value='4'>Gymnastic Center</option>
+          <option value='5'>Bouldering Wall</option>
+          <option value='6'>Outdoor Center</option>
         </select>
       </div>
 
-      <button
-        style={{
-          width: "60px",
-          margin: "10px",
-        }}
-        onClick={props.handleClose}
-      >
+      <button className='submission-button' onClick={props.handleClose}>
         Back
       </button>
-      <button
-        onClick={handleSubmit}
-        style={{
-          width: "60px",
-          margin: "10px",
-        }}
-      >
+      <button className='submission-button' onClick={handleSubmit}>
         Submit
       </button>
     </div>

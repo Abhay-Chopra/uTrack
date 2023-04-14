@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import './App.css';
 
 function LoginForm({ history }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [group, setGroup] = useState("Tracked");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [group, setGroup] = useState('Tracked');
   const [isUser, setIsUser] = useState(true);
   const [isExec, setIsExec] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -20,43 +21,43 @@ function LoginForm({ history }) {
   const handleUserCheckboxChange = (event) => {
     setIsUser(true);
     setIsExec(false);
-    setGroup("Tracked");
+    setGroup('Tracked');
   };
 
   const handleAttendantCheckboxChange = (event) => {
     setIsUser(false);
     setIsExec(false);
-    setGroup("Attendant");
+    setGroup('Attendant');
   };
 
   const handleExecCheckboxChange = (event) => {
     setIsUser(false);
     setIsExec(true);
-    setGroup("Executive");
+    setGroup('Executive');
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setError("");
+    setError('');
 
     axios
-      .post("http://127.0.0.1:8000/api/auth/login/", {
+      .post('http://127.0.0.1:8000/api/auth/login/', {
         username,
         password,
         group,
       })
       .then((response) => {
         if (!isUser && !isExec) {
-          history.push("/attendant", { params: response.data.name });
+          history.push('/attendant', { params: response.data.name });
           history.go(0);
         } else if (isUser) {
-          history.push("/user", {
+          history.push('/user', {
             params: response.data.name,
             anotherParam: response.data.ucid,
           });
           history.go(0);
         } else {
-          history.push("/exec", {
+          history.push('/exec', {
             params: response.data.name,
             anotherParam: response.data.ucid,
           });
@@ -64,12 +65,12 @@ function LoginForm({ history }) {
         }
       })
       .catch((error) => {
-        setError("Invalid credentials. Please try again.");
+        setError('Invalid credentials. Please try again.');
       });
   };
 
   const handleRegistration = (event) => {
-    history.push("/register");
+    history.push('/register');
     history.go(0);
   };
 
@@ -78,20 +79,20 @@ function LoginForm({ history }) {
       <div style={styles.login}>
         <div style={styles.username}>
           <div>
-            <label htmlFor="username">UCID:</label>
+            <label htmlFor='username'>UCID:</label>
             <input
-              type="text"
-              id="username"
+              type='text'
+              id='username'
               value={username}
               onChange={handleUsernameChange}
               style={styles.input}
             />
           </div>
           <div>
-            <label htmlFor="password">Password:</label>
+            <label htmlFor='password'>Password:</label>
             <input
-              type="password"
-              id="password"
+              type='password'
+              id='password'
               value={password}
               onChange={handlePasswordChange}
               style={styles.input}
@@ -99,43 +100,40 @@ function LoginForm({ history }) {
           </div>
         </div>
         <div>
-          <label htmlFor="user-checkbox">
+          <label htmlFor='user-checkbox'>
             <input
-              type="checkbox"
-              id="user-checkbox"
+              type='checkbox'
+              id='user-checkbox'
               checked={isUser}
               onChange={handleUserCheckboxChange}
-            />{" "}
+            />{' '}
             User
           </label>
-          <label htmlFor="attendant-checkbox">
+          <label htmlFor='attendant-checkbox'>
             <input
-              type="checkbox"
-              id="attendant-checkbox"
+              type='checkbox'
+              id='attendant-checkbox'
               checked={!isUser}
               onChange={handleAttendantCheckboxChange}
-            />{" "}
+            />{' '}
             Attendant
           </label>
-          <label htmlFor="user-checkbox">
+          <label htmlFor='user-checkbox'>
             <input
-              type="checkbox"
-              id="user-checkbox"
+              type='checkbox'
+              id='user-checkbox'
               checked={isExec}
               onChange={handleExecCheckboxChange}
-            />{" "}
+            />{' '}
             Executive
           </label>
         </div>
         <div style={styles.errorMess}>{error}</div>
         <div>
-          <button
-            onClick={() => handleRegistration()}
-            style={styles.buttonStyles}
-          >
+          <button className='login-button' onClick={() => handleRegistration()}>
             Register
           </button>
-          <button type="submit" style={styles.buttonStyles}>
+          <button className='login-button' type='submit'>
             Login
           </button>
         </div>
@@ -146,45 +144,45 @@ function LoginForm({ history }) {
 
 const styles = {
   buttonStyles: {
-    width: "60px",
-    margin: "10px",
+    width: '60px',
+    margin: '10px',
   },
   errorMess: {
-    fontSize: "10px",
-    color: "red",
+    fontSize: '10px',
+    color: 'red',
   },
   appBackground: {
-    color: "#db471a",
+    color: '#db471a',
   },
   login: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "#F08000",
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#F08000',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 2.0,
-    color: "#292b2c",
+    color: '#292b2c',
     borderRadius: 30,
-    borderWidth: "thick",
-    width: "35%",
-    height: "250px",
+    borderWidth: 'thick',
+    width: '35%',
+    height: '250px',
   },
   username: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
   },
   input: {
-    boxSizing: "border-box",
-    width: "100%",
-    padding: "3px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    outline: "none",
+    boxSizing: 'border-box',
+    width: '100%',
+    padding: '3px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    outline: 'none',
   },
 };
 

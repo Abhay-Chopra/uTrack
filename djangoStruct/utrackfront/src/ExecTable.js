@@ -1,49 +1,50 @@
-import axios from "axios";
-import { useHistory, useLocation } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import axios from 'axios';
+import { useHistory, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
 function ExecTable() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserPicker, setShowUserPicker] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [checkInTime, setCheckInTime] = useState("");
-  const [success, setSuccess] = useState("");
-  const [failure, setFailure] = useState("");
+  const [checkInTime, setCheckInTime] = useState('');
+  const [success, setSuccess] = useState('');
+  const [failure, setFailure] = useState('');
   const [sessions, setSessions] = useState([]);
   const [noSessions, setNoSessions] = useState(false);
-  let attendantName = "";
+  let attendantName = '';
 
   const getFacilityName = (facilityId) => {
     const facility = facilities.find((f) => f.value === facilityId);
-    return facility ? facility.name : "Unknown Facility";
+    return facility ? facility.name : 'Unknown Facility';
   };
 
   const history = useHistory();
   const location = useLocation();
 
   const facilities = [
-    { name: "Fitness Center", value: "1" },
-    { name: "Aquatic Center", value: "2" },
-    { name: "Racquet Center", value: "3" },
-    { name: "Gymnastic Center", value: "4" },
-    { name: "Bouldering Wall", value: "5" },
-    { name: "Outdoor Center", value: "6" },
+    { name: 'Fitness Center', value: '1' },
+    { name: 'Aquatic Center', value: '2' },
+    { name: 'Racquet Center', value: '3' },
+    { name: 'Gymnastic Center', value: '4' },
+    { name: 'Bouldering Wall', value: '5' },
+    { name: 'Outdoor Center', value: '6' },
   ];
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/get_Users/")
+      .get('http://127.0.0.1:8000/api/get_Users/')
       .then((response) => {
         setUsers(response.data);
       })
       .catch((error) => {
-        setFailure("Error getting users. Contact admin.");
+        setFailure('Error getting users. Contact admin.');
       });
   }, []);
 
   const logoutFunction = () => {
-    history.push("/");
+    history.push('/');
     history.go(0);
   };
 
@@ -69,24 +70,24 @@ function ExecTable() {
   return (
     <div
       style={{
-        height: "400px",
-        overflow: "scroll",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        height: '400px',
+        overflow: 'scroll',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
       <h2>
         <span>Executive Name: </span>
         <span>Joe</span>
       </h2>
-      <table style={{ tableLayout: "fixed" }}>
+      <table style={{ tableLayout: 'fixed' }}>
         <thead>
           <tr>
-            <th Style={{ width: "100px" }}>UCID</th>
-            <th Style={{ width: "100px" }}>First Name</th>
-            <th Style={{ width: "100px" }}>Last Name</th>
-            <th Style={{ width: "100px" }}>Select Info</th>
+            <th Style={{ width: '100px' }}>UCID</th>
+            <th Style={{ width: '100px' }}>First Name</th>
+            <th Style={{ width: '100px' }}>Last Name</th>
+            <th Style={{ width: '100px' }}>Select Info</th>
           </tr>
         </thead>
         <tbody>
@@ -94,7 +95,7 @@ function ExecTable() {
             <tr
               key={user.username}
               style={{
-                color: user === selectedUser ? "green" : "white",
+                color: user === selectedUser ? 'green' : 'white',
               }}
               onClick={() => handleSelect(user)}
             >
@@ -103,10 +104,11 @@ function ExecTable() {
               <td>{user.last_name}</td>
               <td>
                 <button
+                  className='button'
                   onClick={() => {
                     handleSelect(user.username);
-                    setSuccess("");
-                    setFailure("");
+                    setSuccess('');
+                    setFailure('');
                   }}
                 >
                   Select
@@ -120,9 +122,9 @@ function ExecTable() {
         <table>
           <thead>
             <tr>
-              <th style={{ padding: "0 50px" }}>Date</th>
-              <th style={{ padding: "0 50px" }}>Facility</th>
-              <th style={{ padding: "0 50px" }}>Hours</th>
+              <th style={{ padding: '0 50px' }}>Date</th>
+              <th style={{ padding: '0 50px' }}>Facility</th>
+              <th style={{ padding: '0 50px' }}>Hours</th>
             </tr>
           </thead>
           <tbody>
@@ -139,28 +141,28 @@ function ExecTable() {
         <div>No tracked sessions.</div>
       ) : null}
       <button
+        className='button'
         onClick={() => {
           logoutFunction();
-          setSuccess("");
-          setFailure("");
+          setSuccess('');
+          setFailure('');
           setSessions(null);
         }}
-        style={{ marginTop: "1%", marginRight: "250px" }}
       >
         Logout
       </button>
       <div
         style={{
-          fontSize: "15px",
-          color: "green",
+          fontSize: '15px',
+          color: 'green',
         }}
       >
         {success}
       </div>
       <div
         style={{
-          fontSize: "15px",
-          color: "red",
+          fontSize: '15px',
+          color: 'red',
         }}
       >
         {failure}
