@@ -112,6 +112,7 @@ function DatePickerPopup(props) {
         </div>
       )}
       <button
+        className='submission-button'
         style={{
           width: '60px',
           margin: '10px',
