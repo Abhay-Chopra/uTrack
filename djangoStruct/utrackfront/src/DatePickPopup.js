@@ -88,28 +88,28 @@ function DatePickerPopup(props) {
           }}
         />
       </div>
-
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label>Facility:</label>
-        <select
-          onChange={(event) => {
-            facility = event.target.value;
-          }}
-          style={{
-            width: "135px",
-            margin: "0 auto",
-            marginTop: "10px",
-          }}
-        >
-          <option value="1">Fitness Center</option>
-          <option value="2">Aquatic Center</option>
-          <option value="3">Racquet Center</option>
-          <option value="4">Gymnastic Center</option>
-          <option value="5">Bouldering Wall</option>
-          <option value="6">Outdoor Center</option>
-        </select>
-      </div>
-
+      {props.disabled && (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label>Facility:</label>
+          <select
+            onChange={(event) => {
+              facility = event.target.value;
+            }}
+            style={{
+              width: "135px",
+              margin: "0 auto",
+              marginTop: "10px",
+            }}
+          >
+            <option value="1">Fitness Center</option>
+            <option value="2">Aquatic Center</option>
+            <option value="3">Racquet Center</option>
+            <option value="4">Gymnastic Center</option>
+            <option value="5">Bouldering Wall</option>
+            <option value="6">Outdoor Center</option>
+          </select>
+        </div>
+      )}
       <button
         style={{
           width: "60px",

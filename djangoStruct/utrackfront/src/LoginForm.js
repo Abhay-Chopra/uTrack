@@ -6,6 +6,7 @@ function LoginForm({ history }) {
   const [password, setPassword] = useState("");
   const [group, setGroup] = useState("Tracked");
   const [isUser, setIsUser] = useState(true);
+  const [isAttendnant, setIsAttendant] = useState(false);
   const [isExec, setIsExec] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,20 +19,23 @@ function LoginForm({ history }) {
   };
 
   const handleUserCheckboxChange = (event) => {
-    setIsUser(true);
+    setIsUser(event.target.checked);
+    setIsAttendant(false);
     setIsExec(false);
     setGroup("Tracked");
   };
 
   const handleAttendantCheckboxChange = (event) => {
     setIsUser(false);
+    setIsAttendant(event.target.checked);
     setIsExec(false);
     setGroup("Attendant");
   };
 
   const handleExecCheckboxChange = (event) => {
     setIsUser(false);
-    setIsExec(true);
+    setIsAttendant(false);
+    setIsExec(event.target.checked);
     setGroup("Executive");
   };
 
@@ -58,7 +62,6 @@ function LoginForm({ history }) {
         } else {
           history.push("/exec", {
             params: response.data.name,
-            anotherParam: response.data.ucid,
           });
           history.go(0);
         }
@@ -112,15 +115,15 @@ function LoginForm({ history }) {
             <input
               type="checkbox"
               id="attendant-checkbox"
-              checked={!isUser}
+              checked={isAttendnant}
               onChange={handleAttendantCheckboxChange}
             />{" "}
             Attendant
           </label>
-          <label htmlFor="user-checkbox">
+          <label htmlFor="exec-checkbox">
             <input
               type="checkbox"
-              id="user-checkbox"
+              id="exec-checkbox"
               checked={isExec}
               onChange={handleExecCheckboxChange}
             />{" "}

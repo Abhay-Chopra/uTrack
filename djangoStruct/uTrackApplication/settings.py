@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'django.contrib.sessions',
-    'django_extensions'
 ]
 
 LOGGING = {

@@ -12,7 +12,9 @@ function ExecTable() {
   const [failure, setFailure] = useState("");
   const [sessions, setSessions] = useState([]);
   const [noSessions, setNoSessions] = useState(false);
-  let attendantName = "";
+  let execName = "";
+  const location = useLocation();
+  execName = location.state.params;
 
   const getFacilityName = (facilityId) => {
     const facility = facilities.find((f) => f.value === facilityId);
@@ -20,15 +22,13 @@ function ExecTable() {
   };
 
   const history = useHistory();
-  const location = useLocation();
-
   const facilities = [
-    { name: "Fitness Center", value: "1" },
-    { name: "Aquatic Center", value: "2" },
-    { name: "Racquet Center", value: "3" },
-    { name: "Gymnastic Center", value: "4" },
-    { name: "Bouldering Wall", value: "5" },
-    { name: "Outdoor Center", value: "6" },
+    { name: "Fitness Center", value: 1 },
+    { name: "Aquatic Center", value: 2 },
+    { name: "Racquet Center", value: 3 },
+    { name: "Gymnastic Center", value: 4 },
+    { name: "Bouldering Wall", value: 5 },
+    { name: "Outdoor Center", value: 6 },
   ];
 
   useEffect(() => {
@@ -78,7 +78,7 @@ function ExecTable() {
     >
       <h2>
         <span>Executive Name: </span>
-        <span>Joe</span>
+        <span>{execName}</span>
       </h2>
       <table style={{ tableLayout: "fixed" }}>
         <thead>
