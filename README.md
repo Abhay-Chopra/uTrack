@@ -35,4 +35,10 @@ Note: Make sure the Django server is running before starting the React developme
 3. Provides a web interface for end-users to input different Active-Living facilities, equipment used at the facilities, user name, student IDs, check-in, and check-out times.
 4. Different roles and information will be granted to the different types of users in the system.
 
+## Tools and Technologies
+- The backend was developed using Django, a high-level Python web framework that allows for rapid development of secure and maintainable websites.
+- The frontend was created using React, a popular JavaScript library for building user interfaces.
+- A REST API was developed with various endpoints to provide communication between the frontend and backend.
+- A Postgres database was used to store user information, facility information, and activity logs.
+
 
