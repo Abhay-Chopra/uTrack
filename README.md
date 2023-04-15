@@ -1,4 +1,4 @@
-# uTrack-Gym-Tracker
+# uTrack
 
 uTrack is a project designed to solve the problem of tracking and verifying the number of hours spent in Active-Living facilities at the University of Calgary. Many sports teams and school programs require participants to record a certain number of hours in the gym or performing other athletic activities, but the facilities at the university do not provide a simple way for participants to verify these hours.
 
